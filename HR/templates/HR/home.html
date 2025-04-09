@@ -1,0 +1,228 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>فناوران</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: "Shabnam";
+            direction: rtl;
+            background-color: #f4f4f4; /* هم‌خوانی پس‌زمینه بدنۀ صفحه با هدر */
+            padding: 2.5rem 5rem 5rem 5rem;
+        }
+
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0rem 2rem;
+            margin-bottom: 5rem;
+            background-color: #f4f4f4; /* رنگ پس‌زمینه هدر */
+            border-bottom: 1px solid gray;
+            font-weight: bold;
+        }
+
+        .right-section img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .center-section {
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .left-section {
+            text-align: left;
+        }
+
+        .left-section p {
+            margin: 0;
+        }
+
+        table {
+            border-collapse: collapse;
+            float: right;
+        }
+
+        th, td {
+            background-color: #0067cd;
+            color: white;
+            width: 8rem;
+            height: 5rem;
+            text-align: center;
+            border: 1px solid white;
+            overflow: hidden;
+
+        }
+
+        button {
+            border: none;
+            border-radius: 50%;
+            font-size: 2rem;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            color: blue;
+            text-align: center;
+        }
+
+        #firstHeader {
+            position: relative;
+        }
+
+        #firstHeader::after {
+            content: " ";
+            position: absolute;
+            top: 0;
+            right: 0;
+            transform-origin: right;
+            width: 120%;
+            border-bottom: 1px solid white;
+            transform: rotate(-31deg);
+        }
+
+        #firstHeader #text1 {
+            position: absolute;
+            right: 1rem;
+            bottom: 1rem;
+        }
+
+        #firstHeader #text2 {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+        }
+
+        #teamBtn, #roleBtn {
+            position: relative;
+            overflow: visible;
+        }
+
+        #teamDropdown, #roleDropdown {
+            padding: 0.5rem;
+            position: absolute;
+            overflow-y: scroll;
+            overflow-x: hidden;
+            top: 100%;
+            right: 0;
+            left: 0;
+            display: none;
+            flex-direction: column;
+            background-color: white;
+            max-height: 15rem;
+            z-index: 1;
+        }
+
+        #teamDropdown p, #roleDropdown p {
+            border-radius: 5px;
+            padding: 1rem 0;
+            color: #0067cd;
+            cursor: pointer;
+            transition: 0.3s all ease-in-out;
+            font-size: 0.8rem;
+            font-weight: bold;
+            border-bottom: 1px solid #b3b3b3;
+        }
+
+        #teamDropdown p:hover, #roleDropdown p:hover {
+            color: white;
+            background-color: #0067cd;
+            border: none;
+        }
+        .newTH img{
+            width: 50px;
+        }
+    </style>
+
+</head>
+<body>
+
+<header>
+    <div class="right-section">
+        <img src="{% static 'HR/images/favicon.ico' %}" alt="عکس پروفایل">
+    </div>
+    <div class="center-section">
+        سمت های مجاز تیم ها
+    </div>
+    <div class="left-section">
+        <p>شماره استعلام:</p>
+        <p>تاریخ ثبت استعلام:</p>
+    </div>
+</header>
+
+<table>
+    <thead>
+    <tr id="header">
+        <th id="firstHeader">
+            <small id="text1">سمت</small>
+            <small id="text2">تیم</small>
+        </th>
+        <th id="teamBtn">
+            <button onclick="showTeamDropDown()">+</button>
+            <div id="teamDropdown">
+                {% for team in Teams %}
+                    <p onclick="addHeader('{{ team.TeamName }}','{{ team.TeamCode }}')">{{ team.TeamName }}</p>
+                {% endfor %}
+            </div>
+        </th>
+    </tr>
+    </thead>
+    <tbody id="tbody">
+    <tr>
+        <td id="roleBtn">
+            <button onclick="showRoleDropDown()">+</button>
+            <div id="roleDropdown">
+                {% for role in Roles %}
+                    <p onclick="addRole('{{ role.RoleName }}','{{ role.RoleId }}')">{{ role.RoleName }}</p>
+                {% endfor %}
+            </div>
+        </td>
+    </tr>
+    </tbody>
+</table>
+<script>
+    function showTeamDropDown() {
+        const teamDropdown = document.getElementById("teamDropdown");
+        teamDropdown.style.display = teamDropdown.style.display === "flex" ? "none" : "flex";
+    }
+
+    function showRoleDropDown() {
+        const roleDropdown = document.getElementById("roleDropdown");
+        roleDropdown.style.display = roleDropdown.style.display === "flex" ? "none" : "flex";
+    }
+
+    function addHeader(value, className){
+        const newHeader = document.createElement("th");
+        const newSmall = document.createElement('small')
+        const newImg = document.createElement('img')
+        newImg.alt = "TH img";
+        newImg.src = `static/HR/images/TeamIcon/${className}.png`
+        newSmall.textContent = value;
+        newHeader.appendChild(newImg);
+        newHeader.appendChild(document.createElement('br'))
+        newHeader.appendChild(newSmall);
+        newHeader.setAttribute("teamCode", className)
+        newHeader.className = `${className} newTH`;
+        document.getElementById('header').insertBefore(newHeader, document.getElementById('header').lastElementChild);
+    }
+
+    function addRole(value, className){
+        const newRow = document.createElement('tr');
+        const newData = document.createElement('td');
+        newRow.className = className;
+        newData.textContent = value;
+        newRow.appendChild(newData)
+        newRow.setAttribute("roleID", className)
+        document.getElementById('tbody').insertBefore(newRow, document.getElementById('tbody').lastElementChild);
+    }
+</script>
+</body>
+</html>
+

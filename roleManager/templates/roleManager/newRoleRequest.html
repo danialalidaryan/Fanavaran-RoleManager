@@ -1,0 +1,192 @@
+{% extends 'roleManager/base.html' %}
+{% load static %}
+{% block title%}درخواست سمت جدید{% endblock %}
+{%block style%}
+  <link href="{% static "roleManager/css/newRoleRequest.css" %}" rel="stylesheet"/>
+{%endblock%}
+{% block content %}
+<div class="container mt-4">
+  <h2 class="mb-4">درخواست افزودن سمت جدید</h2>
+  <form id="roleRequestForm" method="POST">
+    {% csrf_token %}
+    
+    <div class="form-group mb-3">
+      <label for="RoleTitle">عنوان سمت:</label>
+      <input type="text" class="form-control" id="RoleTitle" name="RoleTitle" required>
+    </div>
+
+    <div class="form-group mb-3">
+      <div class="form-check">
+        <input type="checkbox" class="form-check-input" id="HasLevel" name="HasLevel">
+        <label class="form-check-label" for="HasLevel">آیا این سمت دارای سطح است؟</label>
+      </div>
+    </div>
+
+    <div class="form-group mb-3">
+      <div class="form-check">
+        <input type="checkbox" class="form-check-input" id="HasSuperior" name="HasSuperior">
+        <label class="form-check-label" for="HasSuperior">آیا این سمت دارای ارشد است؟</label>
+      </div>
+    </div>
+
+    <div class="form-group mb-3">
+      <label>تیم‌های مجاز:</label>
+      <select class="form-control select2" id="teamSelect">
+        {% for team in teams %}
+          <option teamCode="{{ team.TeamCode }}">{{ team.TeamName }}</option>
+        {% endfor %}
+      </select>
+      <div id="teamsContainer" class="mt-3">
+        <!-- تیم‌های انتخاب شده اینجا اضافه می‌شوند -->
+      </div>
+    </div>
+    <button id="submitBtn" type="submit" class="btn btn-primary">ثبت درخواست</button>
+  </form>
+</div>
+<script src={% static 'roleManager/js/bootstrap.bundle.min.js' %}></script>
+<script>
+  $(document).ready(function() {
+      // راه‌اندازی Select2
+      $('.select2').select2({
+          placeholder: "یک تیم انتخاب کنید",
+          dir: "rtl",
+          allowClear: true,
+          selectionCssClass: 'never-selected'
+      }).val(null).trigger('change');
+
+      // وقتی یک تیم انتخاب می‌شود
+      $('#teamSelect').on('select2:select', function(event) {
+        const selectedOption = $('#teamSelect option:selected')
+
+        if ($(`#teamsContainer div[data-team-name="${selectedOption.text()}"]`).length > 0) {
+              $(this).val(null).trigger('change');
+              alert('این تیم قبلاً اضافه شده است');
+              return;
+          }
+          
+          // اضافه کردن تیم به لیست
+          addTeamToContainer(selectedOption.text(), selectedOption.attr("teamCode"));
+          
+          $("option:selected").remove();
+          $(this).val(null).trigger('change');
+      });
+
+      function addTeamToContainer(teamName, teamCode) {
+        const teamDiv = $('<div>', {
+            class: 'team-entry d-flex align-items-center mb-2',
+            'data-team-name': teamName
+        });
+
+        const nameSpan = $('<span>', {
+            class: 'me-2',
+            text: teamName
+        });
+
+        const input = $('<input>', {
+            teamCode: teamCode,
+            type: 'number',
+            name: 'teamCount',
+            min: '1',
+            max: '100',
+            class: 'form-control w-25 me-2',
+            placeholder: 'تعداد نقش',
+            required: true
+        });
+
+        const removeButton = $('<button>', {
+            type: 'button',
+            class: 'btn btn-danger btn-sm',
+            text: 'حذف تیم',
+            click: function() {
+                removeTeam(teamName, teamCode);
+            }
+        });
+
+        teamDiv.append(nameSpan, input, removeButton);
+        $('#teamsContainer').append(teamDiv);
+    }
+
+      // تعریف تابع حذف به صورت global
+      window.removeTeam = function(teamName, teamCode) {
+          const newOption = $('<option>', {
+              text: teamName
+          }).attr('teamCode', teamCode);
+          
+          $('#teamSelect').prepend(newOption);
+          $('#teamSelect').val(null).trigger('change');
+          
+          $(`.team-entry[data-team-name="${teamName}"]`).remove();
+      };      
+  });
+
+  $(document).ready(function(){
+    $("#roleRequestForm").on("submit", function(event){
+        event.preventDefault();
+        
+        let formData = {
+            "RoleTitle": $("#RoleTitle").val().trim(),
+            "HasLevel": $("#HasLevel").is(":checked"),
+            "HasSuperior": $("#HasSuperior").is(":checked"),
+            "AllowedTeams": []
+        };
+
+        $("input[type='number']").each(function() {
+            let teamCode = $(this).attr("teamCode");
+            let roleCount = $(this).val();
+            formData.AllowedTeams.push({
+                "TeamCode": teamCode,
+                "RoleCount": roleCount
+            });
+        });
+
+        $.ajax({
+            url: window.location.href,
+            type: 'POST',
+            data: JSON.stringify(formData),
+            contentType: 'application/json',
+            headers: {
+                'X-CSRFToken': $('input[name=csrfmiddlewaretoken]').val()
+            },
+            success: function (response) {
+              let error = response.error;
+              $.confirm({
+                  title: error ? "❌ خطا" : "✅ موفقیت",
+                  content: response.message,
+                  type: error ? "red" : "green",
+                  theme: "modern",
+                  columnClass: "medium",
+                  boxWidth: "400px",
+                  useBootstrap: false,
+                  buttons: {
+                  ok: {
+                      text: "باشه",
+                      btnClass: error ? "btn-red" : "btn-green",
+                      action: function() {
+                          window.location.reload();
+                      }
+                  },
+                  },
+              });
+            },
+            error: function (error) {
+              $.confirm({
+                  title: "❌ خطا در ارتباط",
+                  content: "خطایی در ارتباط با سرور رخ داده است.",
+                  type: "red",
+                  theme: "modern",
+                  columnClass: "medium",
+                  boxWidth: "400px",
+                  useBootstrap: false,
+                  buttons: {
+                  ok: {
+                      text: "باشه",
+                      btnClass: "btn-red",
+                  },
+                  },
+              });
+            },
+        });
+    });
+  });
+</script>
+{% endblock %}
