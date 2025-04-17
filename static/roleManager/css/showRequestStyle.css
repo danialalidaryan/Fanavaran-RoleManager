@@ -1,13 +1,16 @@
 table {
     border-collapse: collapse;
-    float: right;
 }
 
 th, td {
     background-color: #183d87;
     color: white;
-    width: 8rem;
-    height: 5rem;
+    width: 150px;
+    min-width: 150px;
+    max-width: 150px;
+    height: 150px;
+    min-height: 150px;
+    max-height: 150px;
     text-align: center;
     border: 1px solid white;
     overflow: hidden;

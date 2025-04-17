@@ -25,10 +25,18 @@ def setTeamAllowedRoleRequest(request):
     CURRENTUSER_REQUEST = get_currentUser_request(information["currentUser_nationalCode"])
     CURRENTUSER_REQUEST["Status"] = False
 
+    #محاسبه افرادی که مشغول به کار هستند در آن تیم و سمت
+    for item in ALLOWEDTEAMROLE:
+        item['EntryCount'] = UserTeamRole.objects.filter(
+            TeamCode_id=item['TeamCode'],
+            RoleId_id=item['RoleId']
+        ).count()
+    
     if request.method == "POST":
+        print("Hello")
         document_title = "درخواست سمت های مجاز تیم"
         doc_state = "بررسی مدیر"
-        if information["currentUser"] != "DEF":
+        if information["currentUser_role"] != "DEF":
             doc_state = "بررسی مدیر عامل"
 
         try :
@@ -64,10 +72,13 @@ def newRoleRequest(request):
     if request.method == "POST":
         information = get_currentUser_CTO_manager_information(request)
         doc_state = "بررسی مدیر"
-        if information["currentUser"] != "DEF":
+        if information["currentUser_role"] != "DEF":
             doc_state = "بررسی مدیر عامل"
         try:
             body_data = json.loads(request.body)
+            normalizedText = normalize_persian(body_data["RoleTitle"])
+            if Role.objects.filter(RoleName__iexact=normalizedText).exists():
+                raise ValueError("نام سمت تکراری میباشد")
             document_title = f"درخواست ایجاد سمت جدید '{body_data["RoleTitle"]}'"
             newRecord = NewRoleRequest.objects.create(
                 RoleTitle = body_data["RoleTitle"],
@@ -85,8 +96,11 @@ def newRoleRequest(request):
                 doc_state = doc_state,
             )
             return JsonResponse(RESPONSE)
+        except ValueError as error:
+            return JsonResponse({"Error": True, "Message": str(error)})
         except Exception as error:
             return JsonResponse({"Error": True, "Message": "بروز خطا در ایجاد درخواست سمت مجاز تیم"})
+            
     TEAMS = Team.objects.all()
 
     return render(request, 'roleManager/newRoleRequest.html', context={
@@ -273,7 +287,7 @@ def showNewRoleRequest(request, requestID):
         'data': json.dumps(DATA),
     })
 
-# ################### Helper ###################
+# ################### Functions ###################
 def get_currentUser_managers_nationalCode(currentUser_username: str) -> list:
     try:
         if not currentUser_username:
@@ -473,3 +487,19 @@ def get_currentUser_request(currentUser_NationalCode: str) -> dict:
         RESPONSE["Error"] = True
         RESPONSE["Message"] = f"خطای نامشخص در بررسی درخواست های کاربر فعلی"
         return RESPONSE
+    
+def normalize_persian(text):
+    return (
+        text.replace("ي", "ی")
+            .replace("ك", "ک")
+            .replace("‌", " ")  
+            .strip()
+    )
+    
+    
+    
+    
+    
+
+
+

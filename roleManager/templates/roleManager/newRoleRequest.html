@@ -5,188 +5,152 @@
   <link href="{% static "roleManager/css/newRoleRequest.css" %}" rel="stylesheet"/>
 {%endblock%}
 {% block content %}
-<div class="container mt-4">
-  <h2 class="mb-4">درخواست افزودن سمت جدید</h2>
-  <form id="roleRequestForm" method="POST">
-    {% csrf_token %}
-    
-    <div class="form-group mb-3">
-      <label for="RoleTitle">عنوان سمت:</label>
-      <input type="text" class="form-control" id="RoleTitle" name="RoleTitle" required>
-    </div>
 
-    <div class="form-group mb-3">
-      <div class="form-check">
-        <input type="checkbox" class="form-check-input" id="HasLevel" name="HasLevel">
-        <label class="form-check-label" for="HasLevel">آیا این سمت دارای سطح است؟</label>
+<form id="roleRequestForm" action="" >
+  <div id="pageContent">
+    <!-- قسمت بالایی (عنوان سمت و اطلاعات تکمیلی) -->
+    <div id="topSection">
+      <!-- بخش عنوان سمت و مدیر مربوطه -->
+      <div id="topSection_rightSide">
+        <div>
+          <img class="headerIcon" src="{% static 'roleManager/images/Icons/NewRoleRequest/role_title_icon.png'%}" alt="Role Title Icon">
+          <p class="headerTitle">عنوان سمت :</p>
+        </div>
+        <div id="roleTitleInputContainer">
+          <input id="roleTitleInput" type="text" placeholder="نوشتن عنوان سمت">
+        </div>
+        <div id="selectManagerContainer">
+          <img class="headerIcon" src="{% static 'roleManager/images/Icons/NewRoleRequest/manager_icon.png'%}" alt="Manager Icon">
+          <p class="headerTitle">مدیر مربوطه :</p>
+          <select class="form-control select2" id="managerSelect">
+            <option></option>
+            <option>مدیر پروژه</option>
+            <option>مدیر تست</option>
+            <option>مدیر پشتیبانی</option>
+          </select>
+        </div>
       </div>
-    </div>
-
-    <div class="form-group mb-3">
-      <div class="form-check">
-        <input type="checkbox" class="form-check-input" id="HasSuperior" name="HasSuperior">
-        <label class="form-check-label" for="HasSuperior">آیا این سمت دارای ارشد است؟</label>
-      </div>
-    </div>
-
-    <div class="form-group mb-3">
-      <label>تیم‌های مجاز:</label>
-      <select class="form-control select2" id="teamSelect">
-        {% for team in teams %}
-          <option teamCode="{{ team.TeamCode }}">{{ team.TeamName }}</option>
-        {% endfor %}
-      </select>
-      <div id="teamsContainer" class="mt-3">
-        <!-- تیم‌های انتخاب شده اینجا اضافه می‌شوند -->
-      </div>
-    </div>
-    <button id="submitBtn" type="submit" class="btn btn-primary">ثبت درخواست</button>
-  </form>
-</div>
-<script src={% static 'roleManager/js/bootstrap.bundle.min.js' %}></script>
-<script>
-  $(document).ready(function() {
-      // راه‌اندازی Select2
-      $('.select2').select2({
-          placeholder: "یک تیم انتخاب کنید",
-          dir: "rtl",
-          allowClear: true,
-          selectionCssClass: 'never-selected'
-      }).val(null).trigger('change');
-
-      // وقتی یک تیم انتخاب می‌شود
-      $('#teamSelect').on('select2:select', function(event) {
-        const selectedOption = $('#teamSelect option:selected')
-
-        if ($(`#teamsContainer div[data-team-name="${selectedOption.text()}"]`).length > 0) {
-              $(this).val(null).trigger('change');
-              alert('این تیم قبلاً اضافه شده است');
-              return;
-          }
-          
-          // اضافه کردن تیم به لیست
-          addTeamToContainer(selectedOption.text(), selectedOption.attr("teamCode"));
-          
-          $("option:selected").remove();
-          $(this).val(null).trigger('change');
-      });
-
-      function addTeamToContainer(teamName, teamCode) {
-        const teamDiv = $('<div>', {
-            class: 'team-entry d-flex align-items-center mb-2',
-            'data-team-name': teamName
-        });
-
-        const nameSpan = $('<span>', {
-            class: 'me-2',
-            text: teamName
-        });
-
-        const input = $('<input>', {
-            teamCode: teamCode,
-            type: 'number',
-            name: 'teamCount',
-            min: '1',
-            max: '100',
-            class: 'form-control w-25 me-2',
-            placeholder: 'تعداد نقش',
-            required: true
-        });
-
-        const removeButton = $('<button>', {
-            type: 'button',
-            class: 'btn btn-danger btn-sm',
-            text: 'حذف تیم',
-            click: function() {
-                removeTeam(teamName, teamCode);
-            }
-        });
-
-        teamDiv.append(nameSpan, input, removeButton);
-        $('#teamsContainer').append(teamDiv);
-    }
-
-      // تعریف تابع حذف به صورت global
-      window.removeTeam = function(teamName, teamCode) {
-          const newOption = $('<option>', {
-              text: teamName
-          }).attr('teamCode', teamCode);
-          
-          $('#teamSelect').prepend(newOption);
-          $('#teamSelect').val(null).trigger('change');
-          
-          $(`.team-entry[data-team-name="${teamName}"]`).remove();
-      };      
-  });
-
-  $(document).ready(function(){
-    $("#roleRequestForm").on("submit", function(event){
-        event.preventDefault();
+  
+      <!-- بخش اطلاعات تکمیلی -->
+      <div id="topSection_leftSide">
+        <div>
+          <img class="headerIcon" src="{% static 'roleManager/images/Icons/NewRoleRequest/information_icon.png'%}" alt="Information Icon">
+          <p class="headerTitle">اطلاعات تکمیلی :</p>
+        </div>
+        <div id="radioButton_gridContainer">
+          <!-- ردیف ۱: ارشد دارد -->
+          <div><p class="subHeaderTitle">ارشد دارد</p></div>
+          <div id="radioButtonContainer">
+            <div>
+              <img
+              id="hasSuperior_yes_image" 
+              class="subHeaderCheckIcon" 
+              src="{% static 'roleManager/images/Icons/NewRoleRequest/check_default_icon.png'%}" 
+              alt="Has Superior Yes Icon"
+              data-clicked="{% static 'roleManager/images/Icons/NewRoleRequest/check_clicked_icon.png'%}"
+              data-default="{% static 'roleManager/images/Icons/NewRoleRequest/check_default_icon.png'%}">
+              <input type="radio" name="hasSuperior" id="hasSuperior_yes_input">
+              <p class="subHeaderTitle">بله</p>
+            </div>
+            <div>
+              <img 
+              id="hasSuperior_no_image" 
+              class="subHeaderDeclineIcon" 
+              src="{% static 'roleManager/images/Icons/NewRoleRequest/decline_clicked_icon.png'%}" 
+              alt="hasSuperior_no_input"
+              data-clicked="{% static 'roleManager/images/Icons/NewRoleRequest/decline_clicked_icon.png'%}"
+              data-default="{% static 'roleManager/images/Icons/NewRoleRequest/decline_default_icon.png'%}">
+              <input type="radio" name="hasSuperior" id="hasSuperior_no_input" checked>
+              <p class="subHeaderTitle">خیر</p>
+            </div>
+          </div>
+  
         
-        let formData = {
-            "RoleTitle": $("#RoleTitle").val().trim(),
-            "HasLevel": $("#HasLevel").is(":checked"),
-            "HasSuperior": $("#HasSuperior").is(":checked"),
-            "AllowedTeams": []
-        };
+          <!-- ردیف ۲: سطح بندی دارد -->
+          <div><p class="subHeaderTitle">سطح بندی دارد</p></div>
+          <div id="radioButtonContainer">
+            <div>
+              <img 
+              id="hasLevel_yes_image" 
+              class="subHeaderCheckIcon" 
+              src="{% static 'roleManager/images/Icons/NewRoleRequest/check_default_icon.png'%}" 
+              alt="Has Level Yes Icon"
+              data-clicked="{% static 'roleManager/images/Icons/NewRoleRequest/check_clicked_icon.png'%}"
+              data-default="{% static 'roleManager/images/Icons/NewRoleRequest/check_default_icon.png'%}">
+              <input id="hasLevel_yes_input" type="radio" name="hasLevel">
+              <p class="subHeaderTitle">بله</p>
+            </div>
+            <div>
+              <img 
+              id="hasLevel_no_image" 
+              class="subHeaderDeclineIcon" 
+              src="{% static 'roleManager/images/Icons/NewRoleRequest/decline_clicked_icon.png'%}" 
+              alt="Has Level No Icon"
+              data-clicked="{% static 'roleManager/images/Icons/NewRoleRequest/decline_clicked_icon.png'%}"
+              data-default="{% static 'roleManager/images/Icons/NewRoleRequest/decline_default_icon.png'%}">
+              <input id="hasLevel_no_input" type="radio" name="hasLevel" checked>
+              <p class="subHeaderTitle">خیر</p>
+            </div>
+          </div>
+  
+        </div>
+      </div>
+    </div>
+  
+    <!-- قسمت وسط بخش تیم ها و اضافه کردن آن  -->
+    <div id="middleSection">
+      <!-- بخش انتخاب کردن تیم  -->
+      <div id="middleSection_topSide">
+        <img src="{% static 'roleManager/images/Icons/NewRoleRequest/team_title_icon.png'%}" alt="Team Title Icon" >
+        <p class="headerTitle">تیم ها :</p>
+        <select class="form-control select2" id="teamSelect">
+          <option></option>
+          {% for team in teams %}
+            <option data-image-src="{% static 'roleManager/images/TeamIcon/'%}" teamCode="{{ team.TeamCode }}">{{ team.TeamName }}</option>
+          {% endfor %}
+        </select>
+        <div id="topSide_button">
+          <img src="{% static 'roleManager/images/Icons/NewRoleRequest/team_plus_icon.png'%}" alt="Add Team Plus Icon">
+          <p class="subHeaderTitle">اضافه کردن تیم</p>
+        </div>
+      </div>
+  
+      <!-- بخش نشان دادن تیم های انتخاب شده -->
+      <div id="showSelectedTeam_gridContainer">
+      </div>
+  
+    </div>
+    
+    <!-- قسمت پایین (شرایط احراز، شرح شغل) -->
+     <div id="bottomSection">
+       <!-- بخش شرایط احراز -->
+       <div>
+         <div class="bottomSection_headerContainer">
+           <img class="headerIcon" src="{% static 'roleManager/images/Icons/NewRoleRequest/contract_icon.png'%}" alt="Qualification Icon">
+           <p class="headerTitle">شرایط احراز :</p>
+         </div>
+         <div>
+           <textarea class="bottomSection_textArea" name="" id="" placeholder="نوشتن شرایط احراز"></textarea>
+         </div>
+       </div>
+       <div>
+         <div class="bottomSection_headerContainer">
+           <img class="headerIcon" src="{% static 'roleManager/images/Icons/NewRoleRequest/contract_icon.png'%}" alt="Job Description Icon">
+           <p class="headerTitle">شرح شغل :</p>
+         </div>
+         <div>
+           <textarea class="bottomSection_textArea" name="" id="" placeholder="نوشتن شرح شغل"></textarea>
+         </div>
+  
+       </div>
+     </div>
+  
+    <!-- آخرین قسمت (بخش دکمه ساخت سمت جدید) -->
+    <div id="finalSection">
+      <button id="submitButton" type="submit">ساخت سمت جدید</button>
+    </div>
+  </div>
+</form>
 
-        $("input[type='number']").each(function() {
-            let teamCode = $(this).attr("teamCode");
-            let roleCount = $(this).val();
-            formData.AllowedTeams.push({
-                "TeamCode": teamCode,
-                "RoleCount": roleCount
-            });
-        });
-
-        $.ajax({
-            url: window.location.href,
-            type: 'POST',
-            data: JSON.stringify(formData),
-            contentType: 'application/json',
-            headers: {
-                'X-CSRFToken': $('input[name=csrfmiddlewaretoken]').val()
-            },
-            success: function (response) {
-              let error = response.error;
-              $.confirm({
-                  title: error ? "❌ خطا" : "✅ موفقیت",
-                  content: response.message,
-                  type: error ? "red" : "green",
-                  theme: "modern",
-                  columnClass: "medium",
-                  boxWidth: "400px",
-                  useBootstrap: false,
-                  buttons: {
-                  ok: {
-                      text: "باشه",
-                      btnClass: error ? "btn-red" : "btn-green",
-                      action: function() {
-                          window.location.reload();
-                      }
-                  },
-                  },
-              });
-            },
-            error: function (error) {
-              $.confirm({
-                  title: "❌ خطا در ارتباط",
-                  content: "خطایی در ارتباط با سرور رخ داده است.",
-                  type: "red",
-                  theme: "modern",
-                  columnClass: "medium",
-                  boxWidth: "400px",
-                  useBootstrap: false,
-                  buttons: {
-                  ok: {
-                      text: "باشه",
-                      btnClass: "btn-red",
-                  },
-                  },
-              });
-            },
-        });
-    });
-  });
-</script>
+<script src="{% static 'roleManager/js/newRoleRequest.js'%}"></script>
 {% endblock %}

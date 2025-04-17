@@ -1102,3 +1102,18 @@ class SetTeamAllowedRoleRequest(models.Model):
     DocId = models.IntegerField(verbose_name="شناسه سند", null=True, blank=True)
     StatusCode = models.CharField(choices=STATUS_CHOICES, max_length=6, null=True, default="DRAFTR") #MANREV, if both are true CTOREV , finish, failed
 
+class RoleInformation(models.Model):
+
+    RoleID = models.ForeignKey(to="Role", db_column="RoleID", on_delete=models.CASCADE, verbose_name='شناسه سمت')
+    Conditions = 'C'
+    Duties = 'D'
+    DescriptionTypeChoice = ((Conditions,'شرایط احراز'), (Duties,'شرح وظایف'))
+    DescriptionType = models.CharField(max_length=1, choices=DescriptionTypeChoice, verbose_name='نوع')
+
+    class Meta:
+        verbose_name ='دسته بندی سمت'
+        verbose_name_plural ='دسته بندی های سمت'
+
+    def __str__(self):
+        return self.CategoryName + '(' + dict(self.DescriptionTypeChoice)[self.DescriptionType] + ')'
+        
