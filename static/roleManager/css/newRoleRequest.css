@@ -1,15 +1,35 @@
 /* ------------------------------------ سلکتور های عمومی  ------------------------------------ */
+input[type="text"] {
+  outline: none;
+  border: 1px solid #9c9c9c7d;
+  border-radius: 6px;
+  font-family: "Vazirmtn";
+  font-size: 14px;
+  font-weight: 500;
+  height: 46px;
+  padding: 0 10px;
+  width: 100%;
+  cursor: pointer;
+  transition: box-shadow 0.3s ease-in-out;
+  box-sizing: border-box;
+  color: gray;
+  flex: 1;
+}
+input[type="text"]:focus {
+  box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.1);
+}
 .headerIcon {
   width: 30px;
 }
 .headerTitle {
-  font-size: 20px;
-  font-weight: bold;
+  font-family: "IRAmir";
+  font-size: 18px;
   margin: 0px 10px;
 }
 .subHeaderTitle {
-  font-size: 16px;
-  font-weight: bold;
+  font-family: "Vazirmtn";
+  font-size: 14px;
+  font-weight: 500;
 }
 .subHeaderCheckIcon {
   width: 26px;
@@ -24,67 +44,46 @@
 /* ------------------------------------ قسمت بالایی (عنوان سمت و اطلاعات تکمیلی) ------------------------------------ */
 
 #topSection {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
-  gap: 30vw;
-  align-items: center;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  column-gap: 50px;
+  row-gap: 30px;
 }
-#topSection_rightSide div:not(#roleTitleInputContainer),
+
+#topSection_rightSide div,
 #topSection_leftSide div:not(#radioButton_gridContainer) {
   display: flex;
   flex-direction: row;
-  justify-content: right;
   align-items: center;
-}
-#topSection_rightSide{
-  width: 300px;
-}
-
-#roleTitleInput {
-  outline: none;
-  border: 1px solid #9c9c9c7d;
-  border-radius: 10px;
-  font-size: 18px;
-  font-weight: bold;
-  height: 46px;
-  padding: 0 10px;
-  margin: 10px 0 20px 0;
-  width: 100%;
-  cursor: pointer;
-  transition: box-shadow 0.3s ease-in-out;
-  box-sizing: border-box;
-  color: gray;
-}
-#roleTitleInput:focus {
-  box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.1);
 }
 #topSection_rightSide #selectManagerContainer {
   height: 40px;
 }
+#topSection_rightSide #roleTitleInputContainer {
+  margin-bottom: 30px;
+}
+
+#topSection_leftSide {
+  width: 70%;
+  margin: 0 auto 0 0;
+}
 
 #radioButton_gridContainer {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  align-items: center;
-  text-align: center;
+  grid-template-columns: repeat(3, 1fr);
 }
 #radioButtonContainer {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  align-items: center;
-  text-align: center;
-  column-gap: 20px;
+  justify-content: center;
 }
-#radioButtonContainer input{
+#radioButtonContainer input {
   display: none;
 }
-#radioButtonContainer p{
+#radioButtonContainer p {
   margin-right: 3px;
 }
 
 /* ------------------------------------ قسمت وسط بخش تیم ها و اضافه کردن آن ------------------------------------ */
-#middleSection{
+#middleSection {
   margin: 30px 0 30px 0;
   display: flex;
   flex-direction: column;
@@ -93,30 +92,30 @@
 #middleSection_topSide {
   display: flex;
   flex-direction: row;
-  justify-content: flex-start;
   align-items: center;
   height: 40px;
-  width: 65%;
 }
 #middleSection_topSide img {
   width: 50px;
 }
 
 #middleSection_topSide #topSide_button {
-  width: 110px;
+  width: 105px;
   height: 100%;
   margin-right: 10px;
   background-color: #0077ffa3;
-  border-radius: 8px;
+  border-radius: 6px;
   padding: 0 10px;
   display: flex;
   flex-direction: row;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   cursor: pointer;
+  transition: all 0.3s ease-in-out;
 }
 #middleSection_topSide #topSide_button:hover {
-  background-color: #0077ffbb;
+  background-color: #0077ff;
+  color: white;
 }
 #middleSection_topSide #topSide_button img {
   width: 18px;
@@ -147,22 +146,12 @@
 }
 
 .item-card_close {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 18px;
-  height: 18px;
-  background: unset;
-  border: none;
-  font-size: 16px;
-  font-weight: bold;
+  font-size: 20px;
   cursor: pointer;
-  border-radius: 100%;
   transition: all 0.3s ease-in-out;
 }
 .item-card_close:hover {
-  background-color: red;
-  color: white;
+  color: red;
 }
 
 .item-card_quantity {
@@ -199,61 +188,108 @@
 }
 
 /* ------------------------------------ قسمت پایین (شرایط احراز، شرح شغل) ------------------------------------ */
-#bottomSection{
+#bottomSection {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 50px;
 }
-.bottomSection_headerContainer{
+.bottomSection_headerContainer {
   display: flex;
   flex-direction: row;
   justify-content: start;
   align-items: center;
   margin-bottom: 10px;
 }
-.bottomSection_textArea{
-  outline: none;
-  border-radius: 12px;
+.bottomSection_textArea:focus {
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.5);
+}
+.bottomSection_input{
+  margin-left: 10px;
+}
+.bottomSection_plusContainer{
+  display: flex;
   border: none;
-  resize: none;
+  border-radius: 100%;
+  width: 40px;
+  height: 40px;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0.5px 3px 3px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  background-color: unset;
+}
+.bottomSection_plusContainer:hover{
+  box-shadow: none;
+  box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.2);
+  color: rgb(8, 76, 8);
+}
+.bottomSection_plusContainer i{
+  font-size: 22px;
+}
+.bottomSection_textArea {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 15px;
+  border: none;
+  border-radius: 6px;
   padding: 10px;
   min-height: 250px;
   width: 100%;
-  box-sizing: border-box;
   box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
   transition: all 0.3s ease-in-out;
-  cursor: pointer;
-  font-size: 22px;
-  font-weight: bold;
-  color: gray;
+  box-sizing: border-box;
 }
-.bottomSection_textArea:focus{
-  box-shadow: 0 0 6px rgba(0, 0, 0, 0.5);
+.textCard{
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  padding: 8px 16px ;
+  font-family: "Vazirmtn";
+  font-weight: 400;
+  word-wrap: break-word;
+  word-break: normal
+}
+.textCard p{
+  font-family: "Vazirmtn";
+  font-size: 12px;
+  font-weight: 700;
+}
+.textCard i{
+  transition: all 0.3s ease-in-out;
+  cursor: pointer;
+}
+.textCard i:hover{
+  color: red;
 }
 
+
 /* ------------------------------------ آخرین قسمت (بخش دکمه ساخت سمت جدید)  ------------------------------------ */
-#finalSection{
+#finalSection {
   display: flex;
   justify-content: center;
   align-items: center;
   margin-top: 30px;
 }
-#submitButton{
-  box-shadow: 0 0 4px #00277CCC;
+#submitButton {
+  box-shadow: 0 0 4px #00277ccc;
   background-color: unset;
   border: none;
-  border-radius: 8px;
+  border-radius: 6px;
   padding: 12px 48px;
   font-size: 24px;
   font-weight: bold;
   cursor: pointer;
-  transition: all .3s ease-in-out;
+  transition: all 0.3s ease-in-out;
 }
-#submitButton:hover{
-  background-color: #00277CCC;
+#submitButton:hover {
+  background-color: #00277ccc;
   color: white;
 }
-
 
 /* ------------------------------------ SELECT2 OPTIONS ------------------------------------ */
 /* کانتینر کلی Select2 */
@@ -266,8 +302,9 @@
 .select2-container--default .select2-selection--single {
   outline: none;
   border: 1px solid #9c9c9c7d;
-  border-radius: 10px;
-  font-size: 18px;
+  border-radius: 6px;
+  font-family: "Vazirmtn";
+  font-size: 16px;
   height: 100%;
   padding: 0 10px;
   cursor: pointer;

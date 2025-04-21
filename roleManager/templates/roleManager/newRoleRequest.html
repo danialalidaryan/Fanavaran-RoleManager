@@ -12,13 +12,12 @@
     <div id="topSection">
       <!-- بخش عنوان سمت و مدیر مربوطه -->
       <div id="topSection_rightSide">
-        <div>
+        <div id="roleTitleInputContainer">
           <img class="headerIcon" src="{% static 'roleManager/images/Icons/NewRoleRequest/role_title_icon.png'%}" alt="Role Title Icon">
           <p class="headerTitle">عنوان سمت :</p>
+          <input id="roleTitleInput" type="text" placeholder="عنوان سمت را وارد کنید">
         </div>
-        <div id="roleTitleInputContainer">
-          <input id="roleTitleInput" type="text" placeholder="نوشتن عنوان سمت">
-        </div>
+
         <div id="selectManagerContainer">
           <img class="headerIcon" src="{% static 'roleManager/images/Icons/NewRoleRequest/manager_icon.png'%}" alt="Manager Icon">
           <p class="headerTitle">مدیر مربوطه :</p>
@@ -41,7 +40,6 @@
           <!-- ردیف ۱: ارشد دارد -->
           <div><p class="subHeaderTitle">ارشد دارد</p></div>
           <div id="radioButtonContainer">
-            <div>
               <img
               id="hasSuperior_yes_image" 
               class="subHeaderCheckIcon" 
@@ -51,8 +49,9 @@
               data-default="{% static 'roleManager/images/Icons/NewRoleRequest/check_default_icon.png'%}">
               <input type="radio" name="hasSuperior" id="hasSuperior_yes_input">
               <p class="subHeaderTitle">بله</p>
-            </div>
-            <div>
+          </div>
+
+          <div id="radioButtonContainer">
               <img 
               id="hasSuperior_no_image" 
               class="subHeaderDeclineIcon" 
@@ -62,14 +61,12 @@
               data-default="{% static 'roleManager/images/Icons/NewRoleRequest/decline_default_icon.png'%}">
               <input type="radio" name="hasSuperior" id="hasSuperior_no_input" checked>
               <p class="subHeaderTitle">خیر</p>
-            </div>
           </div>
   
         
           <!-- ردیف ۲: سطح بندی دارد -->
           <div><p class="subHeaderTitle">سطح بندی دارد</p></div>
           <div id="radioButtonContainer">
-            <div>
               <img 
               id="hasLevel_yes_image" 
               class="subHeaderCheckIcon" 
@@ -79,8 +76,8 @@
               data-default="{% static 'roleManager/images/Icons/NewRoleRequest/check_default_icon.png'%}">
               <input id="hasLevel_yes_input" type="radio" name="hasLevel">
               <p class="subHeaderTitle">بله</p>
-            </div>
-            <div>
+          </div>
+          <div id="radioButtonContainer">
               <img 
               id="hasLevel_no_image" 
               class="subHeaderDeclineIcon" 
@@ -90,16 +87,13 @@
               data-default="{% static 'roleManager/images/Icons/NewRoleRequest/decline_default_icon.png'%}">
               <input id="hasLevel_no_input" type="radio" name="hasLevel" checked>
               <p class="subHeaderTitle">خیر</p>
-            </div>
           </div>
   
         </div>
       </div>
-    </div>
-  
-    <!-- قسمت وسط بخش تیم ها و اضافه کردن آن  -->
-    <div id="middleSection">
+
       <!-- بخش انتخاب کردن تیم  -->
+      <!-- این بخش در وسط صفحه قرار دارد ولی برای جاگیری بهتر در این بخش قرار میگیرد-->
       <div id="middleSection_topSide">
         <img src="{% static 'roleManager/images/Icons/NewRoleRequest/team_title_icon.png'%}" alt="Team Title Icon" >
         <p class="headerTitle">تیم ها :</p>
@@ -110,11 +104,14 @@
           {% endfor %}
         </select>
         <div id="topSide_button">
-          <img src="{% static 'roleManager/images/Icons/NewRoleRequest/team_plus_icon.png'%}" alt="Add Team Plus Icon">
+          <i class="fa-solid fa-plus"></i>
           <p class="subHeaderTitle">اضافه کردن تیم</p>
         </div>
       </div>
+    </div>
   
+    <!-- قسمت وسط بخش تیم ها و اضافه کردن آن  -->
+    <div id="middleSection">
       <!-- بخش نشان دادن تیم های انتخاب شده -->
       <div id="showSelectedTeam_gridContainer">
       </div>
@@ -128,18 +125,24 @@
          <div class="bottomSection_headerContainer">
            <img class="headerIcon" src="{% static 'roleManager/images/Icons/NewRoleRequest/contract_icon.png'%}" alt="Qualification Icon">
            <p class="headerTitle">شرایط احراز :</p>
+           <input type="text" class="bottomSection_input" id="conditionsInput">
+           <div class="bottomSection_plusContainer" id="conditionsPlusIcon">
+            <i class="fa-solid fa-plus"></i>
+           </div>
          </div>
-         <div>
-           <textarea class="bottomSection_textArea" name="" id="" placeholder="نوشتن شرایط احراز"></textarea>
+         <div class="bottomSection_textArea">
          </div>
        </div>
        <div>
          <div class="bottomSection_headerContainer">
            <img class="headerIcon" src="{% static 'roleManager/images/Icons/NewRoleRequest/contract_icon.png'%}" alt="Job Description Icon">
            <p class="headerTitle">شرح شغل :</p>
+           <input type="text" class="bottomSection_input" id="dutiesInput">
+           <div class="bottomSection_plusContainer" id="dutiesPlusIcon">
+            <i class="fa-solid fa-plus"></i>
+           </div>
          </div>
-         <div>
-           <textarea class="bottomSection_textArea" name="" id="" placeholder="نوشتن شرح شغل"></textarea>
+         <div class="bottomSection_textArea">
          </div>
   
        </div>

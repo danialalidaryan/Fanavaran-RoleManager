@@ -33,7 +33,6 @@ def setTeamAllowedRoleRequest(request):
         ).count()
     
     if request.method == "POST":
-        print("Hello")
         document_title = "درخواست سمت های مجاز تیم"
         doc_state = "بررسی مدیر"
         if information["currentUser_role"] != "DEF":
@@ -46,7 +45,7 @@ def setTeamAllowedRoleRequest(request):
                 RequestorId=information["currentUser_nationalCode"],
                 ManagerId=information["currentUser_managers"][0],
                 CTOId=information["cto_nationalCode"],
-                StatusCode="MANREV"
+                StatusCode="MANREV" if information["currentUser_role"] == "DEF" else "CTOREV"
             )
             RESPONSE = register_send_document(
                 information = information,
@@ -85,9 +84,12 @@ def newRoleRequest(request):
                 HasLevel = body_data["HasLevel"],
                 HasSuperior = body_data["HasSuperior"],
                 AllowedTeams = body_data["AllowedTeams"],
+                ConditionsText = body_data["Conditions"],
+                DutiesText = body_data["Duties"],
                 RequestorId = information["currentUser_nationalCode"],
                 ManagerId = information["currentUser_managers"][0],
                 CTOId = information["cto_nationalCode"],
+                StatusCode="MANREV" if information["currentUser_role"] == "DEF" else "CTOREV"
             )
             RESPONSE = register_send_document(
                 information = information,
