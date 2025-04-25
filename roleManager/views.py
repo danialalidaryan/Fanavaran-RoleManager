@@ -203,7 +203,7 @@ def showSetTeamAllowedRoleRequest(request, requestID):
     })
 
 def showNewRoleRequest(request, requestID):
-    DATA = {
+    PERMISION_DATA = {
         "error": False,
         "status": "",
         "message": "",
@@ -211,10 +211,12 @@ def showNewRoleRequest(request, requestID):
 
     information = get_currentUser_CTO_manager_information(request)
     REQUEST = NewRoleRequest.objects.get(id=requestID)
-    REQUEST_DATA = ast.literal_eval(REQUEST.AllowedTeams)
+    request_data = ast.literal_eval(REQUEST.AllowedTeams)
     teams = Team.objects.all()
-    for team in REQUEST_DATA:
+    for team in request_data:
         team["TeamName"] = teams.filter(TeamCode=team["TeamCode"]).first().TeamName
+    REQUEST.AllowedTeams = request_data
+
 
     if request.method == "POST":
         body_data = json.loads(request.body)
@@ -260,33 +262,36 @@ def showNewRoleRequest(request, requestID):
         return JsonResponse(DATA)
     else:
         if information["error"]:
-            DATA["error"] = True
-            DATA["message"] = information["message"]
+            PERMISION_DATA["error"] = True
+            PERMISION_DATA["message"] = information["message"]
         else:
             match information["currentUser_role"]:
                 case "CTO":
                     if REQUEST.StatusCode == "CTOREV":
-                        DATA["status"] = "EDIT"
+                        PERMISION_DATA["status"] = "EDIT"
                     else:
-                        DATA["status"] = "READONLY"
+                        PERMISION_DATA["status"] = "READONLY"
                 case "MAN":
                     if REQUEST.StatusCode == "MANREV":
-                        DATA["status"] = "EDIT"
+                        PERMISION_DATA["status"] = "EDIT"
                     else:
-                        DATA["status"] = "READONLY"
+                        PERMISION_DATA["status"] = "READONLY"
                 case "DEF":
                     if information["currentUser_nationalCode"] == REQUEST.RequestorId:
                         if REQUEST.StatusCode == "DRAFTR":
-                            DATA["status"] = "EDIT"
+                            PERMISION_DATA["status"] = "EDIT"
                         else:
-                            DATA["status"] = "READONLY"
+                            PERMISION_DATA["status"] = "READONLY"
                     else:
-                        DATA["error"] = True
-                        DATA["message"] = "متاسفانه شما میتوانید فقط درخواست های خود را مشاهده کنید"
-    return render(request, 'roleManager/showRequest.html', context={
+                        PERMISION_DATA["error"] = True
+                        PERMISION_DATA["message"] = "متاسفانه شما میتوانید فقط درخواست های خود را مشاهده کنید"
+    
+    TEAMS = Team.objects.all()
+    return render(request, 'roleManager/showNewRoleRequest.html', context={
+        "teams" : TEAMS,
         "request": REQUEST,
-        "requestData": REQUEST_DATA,
-        'data': json.dumps(DATA),
+        'permisionDataJson': json.dumps(PERMISION_DATA),
+        'permisionData': PERMISION_DATA,
     })
 
 # ################### Functions ###################
