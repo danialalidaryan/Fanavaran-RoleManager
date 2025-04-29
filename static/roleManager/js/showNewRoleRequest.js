@@ -1,7 +1,6 @@
-if(permisionDataJson.status == "ReadOnly"){
+if(permisionDataJson.status == "READONLY"){
     readOnly_Mode()
 }
-console.log(per)
 
 // تنظیم و راه اندازی select2
 $(document).ready(function () {
@@ -12,51 +11,58 @@ $(document).ready(function () {
       minimumResultsForSearch: 5,
     });
     $("#managerSelect").select2({
-      placeholder: "       یک مدیر انتخاب کنید",
-    });
+      placeholder: "یک مدیر انتخاب کنید",
+    }).val(relevantManager).trigger("change");
     $("#teamSelect").select2({
       placeholder: "یک تیم انتخاب کنید",
     });
+
   });
   
   // بخش تغییر رادیو باتن های (بله، خیر) در قسمت اطلاعات تکمیلی
   $(document).ready(function () {
-    // دکمه بله ارشد دارد
-    $("#hasSuperior_yes_image").on("click", function () {
-      $("#hasSuperior_yes_input").prop("checked", true);
-      $(this).attr("src", $(this).data("clicked"));
-      $("#hasSuperior_no_image").attr(
-        "src",
-        $("#hasSuperior_no_image").data("default")
-      );
-    });
-    // دکمه خیر ارشد دارد
-    $("#hasSuperior_no_image").on("click", function () {
-      $("#hasSuperior_no_input").prop("checked", true);
-      $(this).attr("src", $(this).data("clicked"));
-      $("#hasSuperior_yes_image").attr(
-        "src",
-        $("#hasSuperior_yes_image").data("default")
-      );
-    });
-    // دکمه بله سطح دارد
-    $("#hasLevel_yes_image").on("click", function () {
-      $("#hasLevel_yes_input").prop("checked", true);
-      $(this).attr("src", $(this).data("clicked"));
-      $("#hasLevel_no_image").attr(
-        "src",
-        $("#hasLevel_no_image").data("default")
-      );
-    });
-    // دکمه خیر سطح دارد
-    $("#hasLevel_no_image").on("click", function () {
-      $("#hasLevel_no_input").prop("checked", true);
-      $(this).attr("src", $(this).data("clicked"));
-      $("#hasLevel_yes_image").attr(
-        "src",
-        $("#hasLevel_yes_image").data("default")
-      );
-    });
+    if($("#hasSuperior_yes_image").attr("isDisabled") == "false" && $("#hasLevel_yes_image").attr("isDisabled") == "false"){
+      // دکمه بله ارشد دارد
+        $("#hasSuperior_yes_image").on("click", function () {
+          $("#hasSuperior_yes_input").prop("checked", true);
+          $(this).attr("src", $(this).data("clicked"));
+          $("#hasSuperior_no_image").attr(
+            "src",
+            $("#hasSuperior_no_image").data("default")
+          );
+        });
+      // دکمه خیر ارشد دارد
+        $("#hasSuperior_no_image").on("click", function () {
+          $("#hasSuperior_no_input").prop("checked", true);
+          $(this).attr("src", $(this).data("clicked"));
+          $("#hasSuperior_yes_image").attr(
+            "src",
+            $("#hasSuperior_yes_image").data("default")
+          );
+        });
+      // دکمه بله سطح دارد
+        $("#hasLevel_yes_image").on("click", function () {
+          $("#hasLevel_yes_input").prop("checked", true);
+          $(this).attr("src", $(this).data("clicked"));
+          $("#hasLevel_no_image").attr(
+            "src",
+            $("#hasLevel_no_image").data("default")
+          );
+        });
+      // دکمه خیر سطح دارد
+        $("#hasLevel_no_image").on("click", function () {
+          $("#hasLevel_no_input").prop("checked", true);
+          $(this).attr("src", $(this).data("clicked"));
+          $("#hasLevel_yes_image").attr(
+            "src",
+            $("#hasLevel_yes_image").data("default")
+          );
+        });
+    }
+    
+
+
+
   });
   
   // دکمه اضافه کردن تیم که هم آن را تشکیل میدهد و هم اضافه میکند، تکراری بودن آن هم چک میشود
@@ -119,83 +125,57 @@ $(document).ready(function () {
   $(document).ready(function () {
     // حذف اطلاعات تیم
     $(document).on("click", ".item-card_close", function () {
-      const container = $("#showSelectedTeam_gridContainer");
-      const teamCard = $(this).closest(".team-card");
-      const teamCode = teamCard.attr("teamCode");
-      const teamName = teamCard.find("p").text();
-      const imageSrc = teamCard.data("image-src");
-  
-      teamCard.fadeOut("slow", function () {
-        $(this).remove();
-  
-        if (container.children().length == 0) {
-          container.css("display", "none");
-        }
-      });
-  
-      const teamOption = $("<option>")
-        .attr({
-          "data-image-src": imageSrc,
-          teamCode: teamCode,
-        })
-        .text(teamName);
-  
-      $("#teamSelect").prepend(teamOption).trigger("change");
+      if($(this).attr("isDisabled") == "false"){
+        const container = $("#showSelectedTeam_gridContainer");
+        const teamCard = $(this).closest(".team-card");
+        const teamCode = teamCard.attr("teamCode");
+        const teamName = teamCard.find("p").text();
+        const imageSrc = teamCard.data("image-src");
+    
+        teamCard.fadeOut("slow", function () {
+          $(this).remove();
+    
+          if (container.children().length == 0) {
+            container.css("display", "none");
+          }
+        });
+    
+        const teamOption = $("<option>")
+          .attr({
+            "data-image-src": imageSrc,
+            teamCode: teamCode,
+          })
+          .text(teamName);
+    
+        $("#teamSelect").prepend(teamOption).trigger("change");
+      }
     });
   
     // حذف اطلاعات متن های شرایط احراز و شرح شغل
     $(document).on("click", ".textContainer_deleteIcon", function () {
-      const textContainer = $(this).closest(".textCard");
-      const textTitle = textContainer.find("p").text().trim();
-      textContainer.slideUp("slow", function () {
-        $(this).remove();
-      });
+      if($(this).attr("isDisabled") == "false"){
+        const textContainer = $(this).closest(".textCard");
+        textContainer.slideUp("slow", function () {
+          $(this).remove();
+        });
+      }
     });
   });
   
   // دکمه مثبت برای اضافه کردن متن برای شرح شغل و شرایط احراز
   $(document).ready(function () {
-    // شرایط احراز
-    $("#conditionsPlusIcon").click(function () {
-      const parent = $(this).closest(".bottomSection_headerContainer");
-      const textContainer = parent.siblings(".bottomSection_textArea");
-      let textCard_title = $("#conditionsInput").val().trim();
-      let isDuplicated = false;
-  
-      if (textCard_title == "") {
-        $.confirm({
-          title: `❌ باکس وارد کردن متن خالی است`,
-          content: `شما نمیتوانید متن خالی اضافه کنید`,
-          type: "red",
-          theme: "modern",
-          columnClass: "medium",
-          boxWidth: "400px",
-          useBootstrap: false,
-          buttons: {
-            ok: {
-              text: "باشه",
-              btnClass: "btn-red",
-            },
-          },
-        });
-      } else {
-        textCard_title = normalize_persian(textCard_title);
-  
-        if (textContainer.children().length) {
-          textContainer.children().each(function () {
-            let existingText = $(this).find("p").text().trim();
-            existingText = normalize_persian(existingText);
-            if (existingText == textCard_title) {
-              isDuplicated = true;
-              return false;
-            }
-          });
-        }
-  
-        if (isDuplicated) {
+    if($("#conditionsPlusIcon, #dutiesPlusIcon").attr("isDisabled") == "false"){
+      // شرایط احراز
+      $("#conditionsPlusIcon").click(function () {
+        const parent = $(this).closest(".bottomSection_headerContainer");
+        const textContainer = parent.siblings(".bottomSection_textArea");
+        let textCard_title = $("#conditionsInput").val().trim();
+        let isDuplicated = false;
+    
+        if (textCard_title == "") {
           $.confirm({
-            title: `❌ متن انتخاب شده تکراری است`,
-            content: `شما نمیتوانید متن تکراری اضافه کنید`,
+            title: `❌ باکس وارد کردن متن خالی است`,
+            content: `شما نمیتوانید متن خالی اضافه کنید`,
             type: "red",
             theme: "modern",
             columnClass: "medium",
@@ -209,57 +189,57 @@ $(document).ready(function () {
             },
           });
         } else {
-          let textCard = createTextCard(text = textCard_title, cardClass = "conditionsText");
-          textCard
-            .hide()
-            .appendTo(textContainer)
-            .fadeIn("slow", function () {
-              $("#conditionsInput").val("");
+          textCard_title = normalize_persian(textCard_title);
+    
+          if (textContainer.children().length) {
+            textContainer.children().each(function () {
+              let existingText = $(this).find("p").text().trim();
+              existingText = normalize_persian(existingText);
+              if (existingText == textCard_title) {
+                isDuplicated = true;
+                return false;
+              }
             });
+          }
+    
+          if (isDuplicated) {
+            $.confirm({
+              title: `❌ متن انتخاب شده تکراری است`,
+              content: `شما نمیتوانید متن تکراری اضافه کنید`,
+              type: "red",
+              theme: "modern",
+              columnClass: "medium",
+              boxWidth: "400px",
+              useBootstrap: false,
+              buttons: {
+                ok: {
+                  text: "باشه",
+                  btnClass: "btn-red",
+                },
+              },
+            });
+          } else {
+            let textCard = createTextCard(text = textCard_title, cardClass = "conditionsText");
+            textCard
+              .hide()
+              .appendTo(textContainer)
+              .fadeIn("slow", function () {
+                $("#conditionsInput").val("");
+              });
+          }
         }
-      }
-    });
-    // شرح شغل
-    $("#dutiesPlusIcon").click(function () {
-      const parent = $(this).closest(".bottomSection_headerContainer");
-      const textContainer = parent.siblings(".bottomSection_textArea");
-      let textCard_title = $("#dutiesInput").val().trim();
-      let isDuplicated = false;
-  
-      if (textCard_title == "") {
-        $.confirm({
-          title: `❌ باکس وارد کردن متن خالی است`,
-          content: `شما نمیتوانید متن خالی اضافه کنید`,
-          type: "red",
-          theme: "modern",
-          columnClass: "medium",
-          boxWidth: "400px",
-          useBootstrap: false,
-          buttons: {
-            ok: {
-              text: "باشه",
-              btnClass: "btn-red",
-            },
-          },
-        });
-      } else {
-        textCard_title = normalize_persian(textCard_title);
-  
-        if (textContainer.children().length) {
-          textContainer.children().each(function () {
-            let existingText = $(this).find("p").text().trim();
-            existingText = normalize_persian(existingText);
-            if (existingText == textCard_title) {
-              isDuplicated = true;
-              return false;
-            }
-          });
-        }
-  
-        if (isDuplicated) {
+      });
+      // شرح شغل
+      $("#dutiesPlusIcon").click(function () {
+        const parent = $(this).closest(".bottomSection_headerContainer");
+        const textContainer = parent.siblings(".bottomSection_textArea");
+        let textCard_title = $("#dutiesInput").val().trim();
+        let isDuplicated = false;
+    
+        if (textCard_title == "") {
           $.confirm({
-            title: `❌ متن انتخاب شده تکراری است`,
-            content: `شما نمیتوانید متن تکراری اضافه کنید`,
+            title: `❌ باکس وارد کردن متن خالی است`,
+            content: `شما نمیتوانید متن خالی اضافه کنید`,
             type: "red",
             theme: "modern",
             columnClass: "medium",
@@ -273,16 +253,47 @@ $(document).ready(function () {
             },
           });
         } else {
-          let textCard = createTextCard(text = textCard_title, cardClass = "dutiesText");;
-          textCard
-            .hide()
-            .appendTo(textContainer)
-            .fadeIn("slow", function () {
-              $("#dutiesInput").val("");
+          textCard_title = normalize_persian(textCard_title);
+    
+          if (textContainer.children().length) {
+            textContainer.children().each(function () {
+              let existingText = $(this).find("p").text().trim();
+              existingText = normalize_persian(existingText);
+              if (existingText == textCard_title) {
+                isDuplicated = true;
+                return false;
+              }
             });
+          }
+    
+          if (isDuplicated) {
+            $.confirm({
+              title: `❌ متن انتخاب شده تکراری است`,
+              content: `شما نمیتوانید متن تکراری اضافه کنید`,
+              type: "red",
+              theme: "modern",
+              columnClass: "medium",
+              boxWidth: "400px",
+              useBootstrap: false,
+              buttons: {
+                ok: {
+                  text: "باشه",
+                  btnClass: "btn-red",
+                },
+              },
+            });
+          } else {
+            let textCard = createTextCard(text = textCard_title, cardClass = "dutiesText");;
+            textCard
+              .hide()
+              .appendTo(textContainer)
+              .fadeIn("slow", function () {
+                $("#dutiesInput").val("");
+              });
+          }
         }
-      }
-    });
+      });
+    }
   });
   
   // محدود کردن اینپوت های متن
@@ -312,14 +323,13 @@ $(document).ready(function () {
       }
     });
   });
-  
+
   // بخش سابمیت فرم و ارسال آن به سرور
   $(document).ready(function () {
-    $("#roleRequestForm").on("submit", function (event) {
-      event.preventDefault();
-  
+    // تایید درخواست
+    $("#acceptRequest").click(function () {
       const validation = validateRoleRequestForm();
-  
+
       if (validation.error) {
         $.alert({
           title: "❌ خطا در ورود اطلاعات",
@@ -334,15 +344,17 @@ $(document).ready(function () {
         });
       } else {
         let formData = {
+          status: "ACCEPT",
           RoleTitle: $("#roleTitleInput").val().trim(),
           RoleManager: $("#managerSelect").val(),
           HasLevel: $("#hasLevel_yes_input").is(":checked"),
           HasSuperior: $("#hasSuperior_yes_input").is(":checked"),
+          RelevantManager: $("#managerSelect").val(),
           AllowedTeams: [],
           Conditions: [],
           Duties: [],
         };
-  
+
         // مقدار دهی به allowedTeams به ازای هر input
         $(".item-card_input").each(function () {
           let teamCode = $(this).attr("teamCode");
@@ -352,21 +364,20 @@ $(document).ready(function () {
             RoleCount: roleCount,
           });
         });
-  
+
         // وارد کردن متن های شرایط احراز
         $(".conditionsText").each(function () {
           let text = $(this).find("p").text().trim();
           text = normalize_persian(text);
-          formData.Conditions.push(text)
+          formData.Conditions.push({ text: text });
         });
-  
-        // وارد کردن متن های شرح شغل 
+
+        // وارد کردن متن های شرح شغل
         $(".dutiesText").each(function () {
           let text = $(this).find("p").text().trim();
           text = normalize_persian(text);
-          formData.Duties.push(text)
+          formData.Duties.push({ text: text });
         });
-  
         $.ajax({
           url: window.location.href,
           type: "POST",
@@ -383,10 +394,10 @@ $(document).ready(function () {
             $.LoadingOverlay("hide");
           },
           success: function (response) {
-            let error = response.Error;
+            let error = response.error;
             $.confirm({
               title: error ? "❌ خطا" : "✅ موفقیت",
-              content: response.Message,
+              content: response.message,
               type: error ? "red" : "green",
               theme: "modern",
               columnClass: "medium",
@@ -423,7 +434,88 @@ $(document).ready(function () {
           },
         });
       }
-  
+    });
+
+    // رد درخواست
+    $("#rejectRequest").click(function () {
+      $.alert({
+        title: "❗ آیا از رد این درخواست مطمئن هستید؟",
+        content: "این عملیات غیر قابل بازگشت است.",
+        type: "orange",
+        theme: "modern",
+        boxWidth: "400px",
+        useBootstrap: false,
+        buttons: {
+          confirm: {
+            text: "بله، مطمئنم",
+            btnClass: "btn-orange",
+            action: function () {
+              let formData = {
+                status: "REJECT",
+              };
+              $.ajax({
+                url: window.location.href,
+                type: "POST",
+                data: JSON.stringify(formData),
+                contentType: "application/json",
+                headers: {
+                  "X-CSRFToken": $("meta[name='csrf_holder']").attr("content"),
+                  "Content-Type": "application/json",
+                },
+                beforeSend: function () {
+                  $.LoadingOverlay("show");
+                },
+                complete: function () {
+                  $.LoadingOverlay("hide");
+                },
+                success: function (response) {
+                  let error = response.error;
+                  $.confirm({
+                    title: error ? "❌ خطا" : "✅ موفقیت",
+                    content: response.message,
+                    type: error ? "red" : "green",
+                    theme: "modern",
+                    columnClass: "medium",
+                    boxWidth: "400px",
+                    useBootstrap: false,
+                    buttons: {
+                      ok: {
+                        text: "باشه",
+                        btnClass: error ? "btn-red" : "btn-green",
+                        action: function () {
+                          $.LoadingOverlay("show");
+                          window.location.reload();
+                        },
+                      },
+                    },
+                  });
+                },
+                error: function (error) {
+                  $.confirm({
+                    title: "❌ خطا در ارتباط",
+                    content: "خطایی در ارتباط با سرور رخ داده است.",
+                    type: "red",
+                    theme: "modern",
+                    columnClass: "medium",
+                    boxWidth: "400px",
+                    useBootstrap: false,
+                    buttons: {
+                      ok: {
+                        text: "باشه",
+                        btnClass: "btn-red",
+                      },
+                    },
+                  });
+                },
+              });
+            },
+          },
+          cancel: {
+            text: "لغو",
+            btnClass: "btn-default",
+          },
+        },
+      });
     });
   });
   
@@ -439,7 +531,8 @@ $(document).ready(function () {
       const itemCard_iconGroup = $("<div>").attr("class", "item-card_icon-group");
       const itemCard_quantity = $("<div>").attr("class", "item-card_quantity");
       const itemCard_close = $("<i>").attr({
-        class: "fa-solid fa-trash-can item-card_close",
+        "class": "fa-solid fa-trash-can item-card_close",
+        "isDisabled": "false"
       });
   
       const itemCard_icon = $("<img>").attr({
@@ -492,10 +585,10 @@ $(document).ready(function () {
   function createTextCard(text, cardClass) {
     const textCard = $("<div>").attr({ class: `textCard ${cardClass}` });
     const textCard_title = $("<p>").text(text);
-    const textCard_deleteIcon = $("<i>").attr(
-      "class",
-      "fa-solid fa-trash-can textContainer_deleteIcon"
-    );
+    const textCard_deleteIcon = $("<i>").attr({
+      "class": "fa-solid fa-trash-can textContainer_deleteIcon",
+      "isDisabled": "false"
+    });
   
     textCard.append(textCard_title, textCard_deleteIcon);
     return textCard;
@@ -571,11 +664,25 @@ $(document).ready(function () {
     return result;
   }
   
+  // وقتی این تابع صدا زده میشه که بخوایم تمام دسترسی های کاربر رو از تغییر در صفحه بگیریم
   function readOnly_Mode(){
+    // غیر فعال کردن تمام اینپوت ها و سلکت 2
     $("input").prop("disabled", true).css("cursor", "not-allowed");
-    $("#topSide_button").attr("isDisabled", true).css("cursor", "not-allowed");
-    $("select").prop("disabled", true).trigger("change.select2");  
-       
+    $("select").prop("disabled", true).trigger("change.select2");
 
-    
+    // غیر فعال کردن آیکون مثبت شرایط احراز و شرح شغل، دکمه ثبت تیم
+    $("#topSide_button, #dutiesPlusIcon, #conditionsPlusIcon")
+        .attr("isDisabled", true)
+        .css("cursor", "not-allowed");
+
+    // غیر فعال کردن تیک مثبت و ضرب در، برای سطح بندی و ارشد دارد
+    $("#hasSyperior_yes_image, #hasLevel_yes_image, #hasSuperior_yes_image, #hasLevel_yes_image, #hasSuperior_no_image, #hasLevel_no_image")
+        .attr("isDisabled", "true")
+        .css("cursor", "not-allowed");
+
+    // غیر فعال کردن تمامی آیکون های سطل آشغال
+    $(".fa-trash-can")
+        .attr("isDisabled", "true")
+        .css("cursor", "not-allowed");
 }
+

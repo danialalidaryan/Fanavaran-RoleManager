@@ -132,7 +132,6 @@ input[type="text"] {
     column-gap: 15px;
     padding: 10px;
     gap: 15px;
-    display: none;
   }
   
   .team-card {
@@ -268,15 +267,16 @@ input[type="text"] {
   }
   
   
-  /* ------------------------------------ آخرین قسمت (بخش دکمه ساخت سمت جدید)  ------------------------------------ */
+  /* ------------------------------------ آخرین قسمت (بخش دکمه ساخت تایید و رد سمت جدید)  ------------------------------------ */
   #finalSection {
     display: flex;
     justify-content: center;
     align-items: center;
     margin-top: 30px;
+    gap: 50px;
   }
-  #submitButton {
-    box-shadow: 0 0 4px #00277ccc;
+  #acceptRequest, #rejectRequest {
+    box-shadow: 0 0 4px #059212;
     background-color: unset;
     border: none;
     border-radius: 6px;
@@ -286,8 +286,15 @@ input[type="text"] {
     cursor: pointer;
     transition: all 0.3s ease-in-out;
   }
-  #submitButton:hover {
-    background-color: #00277ccc;
+  #acceptRequest:hover {
+    background-color: #059212;
+    color: white;
+  }
+  #rejectRequest{
+    box-shadow: 0 0 4px red;
+  }
+  #rejectRequest:hover{
+    background-color: red;
     color: white;
   }
   

@@ -41,6 +41,9 @@ th, td {
     position: absolute;
     right: 5%;
     top: 0;
+    font-family: "Vazirmtn";
+    font-weight: 700;
+    
 }
 
 .searchInput {
@@ -101,6 +104,8 @@ th, td {
 
 #role_team_header {
     position: relative;
+    font-family: "IRAmir";
+    font-weight: normal;
 }
 
 #role_team_header::after {
@@ -146,9 +151,8 @@ th, td {
     justify-content: center;
     align-items: center;
     position: relative;
-    gap: 10px;
+    gap: 5px;
 }
-
 .itemContainer div{
     display: flex;
     justify-content: center;
@@ -180,16 +184,17 @@ th, td {
     background-color: white;
     outline: none;
     font-size: 15px;
+    font-family: "Vazirmtn";
     font-weight: bold;
     text-align: center;
     box-sizing: border-box;
 }
 
-
 #allowedParent p{
     transform: rotate(270deg);
-    font-size: 8px;
-    font-weight: bold;
+    font-size: 6px;
+    font-family: "IRAmir";
+    font-weight: normal;
     color: #000;
 }
 
@@ -206,7 +211,7 @@ input[type="number"] {
 
 .allowedParentIcon{
     position: absolute;
-    right: 20px;
+    right: 14px;
     top: 50%;
     transform: translateY(-50%);
     width: 32px;
@@ -232,6 +237,8 @@ input[type="number"] {
     flex-direction: column;
     align-items: center;
     justify-content: space-evenly;
+    font-family: "IRAmir";
+    font-weight: normal;
 }
 
 .teamInfo{
@@ -248,6 +255,7 @@ input[type="number"] {
     flex-direction: row;
     justify-content: space-evenly;
     align-items: center;
+    font-size: 10px;
 }
 
 .teamFunctions div{
@@ -266,13 +274,15 @@ input[type="number"] {
     justify-content: left;
     align-items: center;
     gap: 5px;
+    font-size: 10px;
 }
 
 .textContainer{
     width: 90%;
     margin: 0 auto;
     font-size: 20px;
-    font-weight: bold;
+    font-family: "IRAmir";
+    font-weight: normal;
     text-align: center;
 }
 
@@ -281,10 +291,7 @@ input[type="number"] {
     cursor: pointer;
 }
 
-.teamFunctions p, .roleContainer .showContainer, .roleContainer .deleteContainer{
-    font-size: 10px;
-    font-weight: bold;
-}
+
 
 
 

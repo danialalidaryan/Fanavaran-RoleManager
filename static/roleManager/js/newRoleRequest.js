@@ -331,6 +331,7 @@ $(document).ready(function () {
         RoleManager: $("#managerSelect").val(),
         HasLevel: $("#hasLevel_yes_input").is(":checked"),
         HasSuperior: $("#hasSuperior_yes_input").is(":checked"),
+        RelevantManager: $("#managerSelect").val(),
         AllowedTeams: [],
         Conditions: [],
         Duties: [],
@@ -350,14 +351,14 @@ $(document).ready(function () {
       $(".conditionsText").each(function () {
         let text = $(this).find("p").text().trim();
         text = normalize_persian(text);
-        formData.Conditions.push(text)
+        formData.Conditions.push({text: text})
       });
 
       // وارد کردن متن های شرح شغل 
       $(".dutiesText").each(function () {
         let text = $(this).find("p").text().trim();
         text = normalize_persian(text);
-        formData.Duties.push(text)
+        formData.Duties.push({text: text})
       });
 
       $.ajax({
@@ -376,10 +377,10 @@ $(document).ready(function () {
           $.LoadingOverlay("hide");
         },
         success: function (response) {
-          let error = response.Error;
+          let error = response.error;
           $.confirm({
             title: error ? "❌ خطا" : "✅ موفقیت",
-            content: response.Message,
+            content: response.message,
             type: error ? "red" : "green",
             theme: "modern",
             columnClass: "medium",

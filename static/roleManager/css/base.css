@@ -69,10 +69,11 @@ header {
 
 .center-section {
   font-size: 30px;
-  font-weight: 400;
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
+  font-family: "Vazirmtn";
+  font-weight: 700;
 }
 
 .content {
