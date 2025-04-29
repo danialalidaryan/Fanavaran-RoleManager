@@ -366,8 +366,12 @@ class NewRoleRequest(models.Model):
     RoleTitle = models.CharField(max_length=100, verbose_name='عنوان سمت')
     HasLevel = models.BooleanField(verbose_name='آیا این سمت دارای سطح است؟', default=False)
     HasSuperior = models.BooleanField(verbose_name='آیا این سمت دارای ارشد دارد؟', default=False)
-    # [{teamCode,RoleCount},{TeamCode,RoleCount}]
+    # [{TeamCode,RoleCount},{TeamCode,RoleCount}]
     AllowedTeams = models.CharField(max_length=1000, verbose_name='این سمت در چه تیم های فعال است؟')
+    # ["ConditionText", "ConditionText", "ConditionText", "ConditionText", ...]
+    ConditionsText = models.CharField(max_length=1000, verbose_name='این سمت چه شرایط احرازی دارد ؟', null=True)
+    # ["DutiesText", "DutiesText", "DutiesText", "DutiesText", ...]
+    DutiesText = models.CharField(max_length=1000, verbose_name='این سمت چه شرایح شغلی دارد ؟', null=True)
     RequestorId = models.CharField(max_length=10,
                                    validators=[validate.NationalCode_Validator],
                                    verbose_name="کد ملی درخواست دهنده")
@@ -386,9 +390,9 @@ class NewRoleRequest(models.Model):
                                      null=True)
     CTODate = models.DateField(verbose_name='تاریخ اظهار نظر مدیرعامل', null=True)
     StatusCode = models.CharField(choices=STATUS_CHOICES, max_length=6, null=True, default="DRAFTR")
-
-
-
+    DocId = models.IntegerField(verbose_name="شناسه سند", null=True, blank=True)
+    RelevantManager = models.CharField(max_length=50, verbose_name="مدیر مربوطه", null=True)
+    
 class Team(models.Model):
     class Meta:
         db_table = 'Team'
@@ -1103,17 +1107,14 @@ class SetTeamAllowedRoleRequest(models.Model):
     StatusCode = models.CharField(choices=STATUS_CHOICES, max_length=6, null=True, default="DRAFTR") #MANREV, if both are true CTOREV , finish, failed
 
 class RoleInformation(models.Model):
-
-    RoleID = models.ForeignKey(to="Role", db_column="RoleID", on_delete=models.CASCADE, verbose_name='شناسه سمت')
-    Conditions = 'C'
-    Duties = 'D'
-    DescriptionTypeChoice = ((Conditions,'شرایط احراز'), (Duties,'شرح وظایف'))
-    DescriptionType = models.CharField(max_length=1, choices=DescriptionTypeChoice, verbose_name='نوع')
-
     class Meta:
         verbose_name ='دسته بندی سمت'
         verbose_name_plural ='دسته بندی های سمت'
-
-    def __str__(self):
-        return self.CategoryName + '(' + dict(self.DescriptionTypeChoice)[self.DescriptionType] + ')'
         
+    Conditions = 'C'
+    Duties = 'D'
+    DESCRIPTION_TYPE_CHOICE = ((Conditions,'شرایط احراز'), (Duties,'شرح وظایف'))
+    
+    Title = models.CharField(max_length=50, db_column="Title", verbose_name="عنوان", null=True)
+    RoleID = models.ForeignKey(to="Role", db_column="RoleID", on_delete=models.CASCADE, verbose_name='شناسه سمت')
+    DescriptionType = models.CharField(max_length=1, choices=DESCRIPTION_TYPE_CHOICE, verbose_name='نوع')
