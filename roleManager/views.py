@@ -25,8 +25,8 @@ def setTeamAllowedRoleRequest(request):
     TEAMNAMES = list(Team.objects.values("TeamName", "TeamCode"))
     ROLENAMES = list(Role.objects.values("RoleName", "RoleId"))
     CURRENTUSER_REQUEST = get_currentUser_request(
-        information["currentUser_nationalCode"])
-    CURRENTUSER_REQUEST["Status"] = False
+        information["currentUser_nationalCode"], targetedTable=SetTeamAllowedRoleRequest)
+    # CURRENTUSER_REQUEST["Status"] = False
 
     # محاسبه افرادی که مشغول به کار هستند در آن تیم و سمت
     for item in ALLOWEDTEAMROLE:
@@ -72,8 +72,8 @@ def setTeamAllowedRoleRequest(request):
 
 
 def newRoleRequest(request):
+    information = get_currentUser_CTO_manager_information(request)
     if request.method == "POST":
-        information = get_currentUser_CTO_manager_information(request)
         doc_state = "بررسی مدیر"
         if information["currentUser_role"] != "DEF":
             doc_state = "بررسی مدیر عامل"
@@ -94,7 +94,9 @@ def newRoleRequest(request):
                 ManagerId=information["currentUser_managers"][0],
                 CTOId=information["cto_nationalCode"],
                 StatusCode="MANREV" if information["currentUser_role"] == "DEF" else "CTOREV",
-                RelevantManager=body_data["RelevantManager"]
+                RelevantManager=body_data["RelevantManager"],
+                RoleTypeCode=body_data["RoleTypeCode"],
+                NewRoleTypeTitle=body_data["NewRoleTypeTitle"]
             )
             RESPONSE = register_send_document(
                 information=information,
@@ -107,11 +109,14 @@ def newRoleRequest(request):
             return JsonResponse({"error": True, "message": str(error)})
         except Exception as error:
             return JsonResponse({"error": True, "message": "بروز خطا در ایجاد درخواست سمت مجاز تیم"})
-
-    TEAMS = Team.objects.all()
+    else:
+        CURRENTUSER_REQUEST = get_currentUser_request(
+            information["currentUser_nationalCode"], targetedTable=NewRoleRequest)
+        TEAMS = Team.objects.all()
 
     return render(request, 'roleManager/newRoleRequest.html', context={
         "teams": TEAMS,
+        "currentUser_request": CURRENTUSER_REQUEST,
     })
 
 
@@ -143,7 +148,7 @@ def showSetTeamAllowedRoleRequest(request, requestID):
                         for team in REQUEST.TeamAllowedRoles:
                             for role in team["Roles"]:
                                 teamAllowedRoles_record = TeamAllowedRoles.objects.get(TeamCode=team["TeamCode"],
-                                                                                    RoleId=role["RoleId"])
+                                                                                       RoleId=role["RoleId"])
                                 teamAllowedRoles_record.AllowedRoleCount = role["RoleCount"]
                                 teamAllowedRoles_record.SetTeamAllowedRoleRequest = REQUEST
                                 teamAllowedRoles_record.save()
@@ -171,7 +176,7 @@ def showSetTeamAllowedRoleRequest(request, requestID):
                             DATA["message"] = "درخواست با موفقیت تایید شد"
                     except Exception:
                         raise ValueError("بروز خطا در قسمت ذخیره اطلاعات")
-                    
+
             elif bodyData["status"] == "REJECT":
                 if information["currentUser_role"] == "CTO":
                     REQUEST.StatusCode = "FINREJ"
@@ -247,7 +252,7 @@ def showSetTeamAllowedRoleRequest(request, requestID):
                     else:
                         DATA["error"] = True
                         DATA["message"] = "متاسفانه شما میتوانید فقط درخواست های خود را مشاهده کنید"
-    
+
     return render(request, 'roleManager/showSetTeamAllowedRoleRequest.html', context={
         "request": REQUEST,
         'permisionDataJson': json.dumps(DATA),
@@ -542,7 +547,9 @@ def get_currentUser_CTO_manager_information(request) -> dict:
         return information
 
 
-def get_currentUser_request(currentUser_NationalCode: str) -> dict:
+# با فراخوانی این تابع ما میخوایم چک کنیم که آیا کاربر فعلی با کد ملی خودش درخواست جدیدی ثبت کرده است یا خیر
+# "نام جدول" اسم جدولی است که میخواهیم در آن به دنبال درخواست کاربر بگردیم
+def get_currentUser_request(currentUser_NationalCode: str, targetedTable) -> dict:
     RESPONSE = {
         "Status": True,
         "Error": False,
@@ -554,8 +561,9 @@ def get_currentUser_request(currentUser_NationalCode: str) -> dict:
         if not currentUser_NationalCode:
             raise ValueError("کد ملی کاربر نامعتبر است")
 
-        # گرفتن تمام درخواست‌های کاربر فعلی
-        user_requests = SetTeamAllowedRoleRequest.objects.filter(
+        # تمام درخواست های کاربر فعلی رو میریزیم اینجا
+        # بستگی داره که روی کدوم جدول بخوایم جستجو کنیم
+        user_requests = targetedTable.objects.filter(
             RequestorId=currentUser_NationalCode
         )
 

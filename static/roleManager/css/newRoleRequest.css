@@ -40,6 +40,12 @@ input[type="text"]:focus {
   width: 38px;
   cursor: pointer;
 }
+.circleIcon{
+  width: 50px;
+}
+.circleIcon:hover{
+  cursor: pointer;
+}
 
 /* ------------------------------------ قسمت بالایی (عنوان سمت و اطلاعات تکمیلی) ------------------------------------ */
 
@@ -49,24 +55,37 @@ input[type="text"]:focus {
   column-gap: 50px;
   row-gap: 30px;
 }
+#topSection_rightSide, #topSection_leftSide{
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
 
-#topSection_rightSide div,
-#topSection_leftSide div:not(#radioButton_gridContainer) {
+
+.flexRowContainer, #radioButton_gridContainer div{
   display: flex;
   flex-direction: row;
   align-items: center;
 }
-#topSection_rightSide #selectManagerContainer {
-  height: 40px;
+
+#roleType_icons, #relevantManager_icons{
+  justify-content: space-evenly;
+  flex: 1;
+  font-family: "IRAmir";
+  font-size: 10px;
+  color: gray;
 }
-#topSection_rightSide #roleTitleInputContainer {
-  margin-bottom: 30px;
+#roleType_icons div, #relevantManager_icons div{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
-#topSection_leftSide {
-  width: 70%;
-  margin: 0 auto 0 0;
+#roleTypeInputContainer{
+  display: none;
 }
+
 
 #radioButton_gridContainer {
   display: grid;
@@ -75,11 +94,14 @@ input[type="text"]:focus {
 #radioButtonContainer {
   justify-content: center;
 }
-#radioButtonContainer input {
+#radioButtonContainer input{
   display: none;
 }
 #radioButtonContainer p {
   margin-right: 3px;
+}
+.radioHeader{
+  font-size: 18px;
 }
 
 /* ------------------------------------ قسمت وسط بخش تیم ها و اضافه کردن آن ------------------------------------ */

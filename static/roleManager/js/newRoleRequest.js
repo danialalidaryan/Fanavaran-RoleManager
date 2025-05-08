@@ -6,11 +6,92 @@ $(document).ready(function () {
     selectionCssClass: "never-selected",
     minimumResultsForSearch: 5,
   });
-  $("#managerSelect").select2({
-    placeholder: "       یک مدیر انتخاب کنید",
-  });
   $("#teamSelect").select2({
     placeholder: "یک تیم انتخاب کنید",
+  });
+});
+
+// بخش تغییر رفتار آیکون های نوع سمت و مدیر مربوطه
+$(document).ready(function () {
+  $(".roleTypeIcons").each(function () {
+    $(this).on("mouseenter", function () {
+      if($(this).attr("isClicked") == "false"){
+        const iconName = $(this).data("iconname");
+        const address = $(this).data("staticaddress");
+        $(this).attr("src", `${address}/${iconName}_hover_icon.png`);
+      }
+    });
+    $(this).on("mouseout", function () {
+      if($(this).attr("isClicked") == "false"){
+        const iconName = $(this).data("iconname");
+        const address = $(this).data("staticaddress");
+        $(this).attr("src", `${address}/${iconName}_default_icon.png`);
+      }
+    });
+    $(this).on("click", function () {
+      if($(this).attr("isClicked") == "false"){
+        let iconName = null;
+        let address = null;
+
+        $(this).closest("#roleType_icons").find("img").each(function(){
+          iconName = $(this).data("iconname");
+          address = $(this).data("staticaddress");
+          $(this).attr("src", `${address}/${iconName}_default_icon.png`);
+          $(this).siblings("p").css("color", "gray")
+          $(this).attr("isClicked", "false")
+        })
+        if($(this).attr("id") == "otherRoleTypeIcon"){
+          $("#roleTypeInputContainer").css("display", "flex").hide().slideDown("slow")
+          $("#roleTypeInputContainer").find("input").attr("isVisible", "true")
+        }else{
+          $("#roleTypeInputContainer").slideUp("slow")
+          $("#roleTypeInputContainer").find("input").attr("isVisible", "false")
+        }
+        iconName = $(this).data("iconname");
+        address = $(this).data("staticaddress");
+        $(this).attr("src", `${address}/${iconName}_clicked_icon.png`);
+        $(this).siblings("p").css("color", "black")
+        $(this).siblings("input").prop("checked", true);
+        $(this).attr("isClicked", "true");
+      }
+    });
+  });
+
+  $(".relevantManagerIcon").each(function () {
+    $(this).on("mouseenter", function () {
+      if($(this).attr("isClicked") == "false"){
+        const iconName = $(this).data("iconname");
+        const address = $(this).data("staticaddress");
+        $(this).attr("src", `${address}/${iconName}_hover_icon.png`);
+      }
+    });
+    $(this).on("mouseout", function () {
+      if($(this).attr("isClicked") == "false"){
+        const iconName = $(this).data("iconname");
+        const address = $(this).data("staticaddress");
+        $(this).attr("src", `${address}/${iconName}_default_icon.png`);
+      }
+    });
+    $(this).on("click", function () {
+      if($(this).attr("isClicked") == "false"){
+        let iconName = null;
+        let address = null;
+
+        $(this).closest("#relevantManager_icons").find("img").each(function(){
+          iconName = $(this).data("iconname");
+          address = $(this).data("staticaddress");
+          $(this).attr("src", `${address}/${iconName}_default_icon.png`);
+          $(this).siblings("p").css("color", "gray")
+          $(this).attr("isClicked", "false")
+        })
+        iconName = $(this).data("iconname");
+        address = $(this).data("staticaddress");
+        $(this).attr("src", `${address}/${iconName}_clicked_icon.png`);
+        $(this).siblings("p").css("color", "black")
+        $(this).siblings("input").prop("checked", true);
+        $(this).attr("isClicked", "true");
+      }
+    });
   });
 });
 
@@ -327,15 +408,22 @@ $(document).ready(function () {
       });
     } else {
       let formData = {
-        RoleTitle: $("#roleTitleInput").val().trim(),
-        RoleManager: $("#managerSelect").val(),
+        RoleTitle: normalize_persian($("#roleTitleInput").val().trim()),
+        RoleTypeCode: $("input[name='roleType']:checked").siblings("img").data("code"),
+        NewRoleTypeTitle: null,
+        RelevantManager: $("input[name='relevantManager']:checked").siblings("p").text(),
         HasLevel: $("#hasLevel_yes_input").is(":checked"),
         HasSuperior: $("#hasSuperior_yes_input").is(":checked"),
-        RelevantManager: $("#managerSelect").val(),
         AllowedTeams: [],
         Conditions: [],
         Duties: [],
       };
+
+      if(formData.RoleType == "O"){
+        let text = $("#roleTypeTitleInput").text().trim()
+        text = normalize_persian(text)
+        formData.NewRoleTypeTitle = text
+      }
 
       // مقدار دهی به allowedTeams به ازای هر input
       $(".item-card_input").each(function () {
@@ -526,32 +614,46 @@ function validateRoleRequestForm() {
   };
 
   // 1. عنوان سمت
-  const title = $.trim($("#roleTitleInput").val());
+  let title = $.trim($("#roleTitleInput").val());
   if (!title) {
     result.error = true;
     result.messages.push("📌 عنوان سمت را وارد کنید.");
   }
 
-  // 2. مدیر مربوطه (Select2)
-  const managerVal = $("#managerSelect").val();
-  if (!managerVal) {
+  // 2. نوع سمت 
+  if(!$("input[name='roleType']:checked").length){
     result.error = true;
-    result.messages.push("📌 مدیر مربوطه را انتخاب کنید.");
+    result.messages.push("📌 نوع سمت را انتخاب کنید.");
   }
 
-  // 3. حداقل یک تیم
+  // 3. نوع سمت جدید
+  if ($("#roleTypeTitleInput").attr("isVisible") == "true") {
+    title = $.trim($("#roleTitleInput").val());
+    if (!title) {
+      result.error = true;
+      result.messages.push("📌 عنوان نوع سمت را وارد کنید.");
+    }
+  }
+  
+  // 4. مدیر مربوطه
+  if(!$("input[name='relevantManager']:checked").length){
+    result.error = true;
+    result.messages.push("📌 مدیر مربوطه را انتخاب کنید");
+  }
+
+  // 5. حداقل یک تیم
   if ($("#showSelectedTeam_gridContainer").children().length == 0) {
     result.error = true;
     result.messages.push("📌 حداقل یک تیم اضافه کنید.");
   }
 
-  // 4. شرایط احراز
+  // 6. شرایط احراز
   if ($(".bottomSection_textArea").eq(0).children().length === 0) {
     result.error = true;
     result.messages.push("📌 حداقل یک «شرط احراز» وارد کنید.");
   }
 
-  // 5. شرح شغل
+  // 7. شرح شغل
   if ($(".bottomSection_textArea").eq(1).children().length === 0) {
     result.error = true;
     result.messages.push("📌 حداقل یک «شرح شغل» وارد کنید.");

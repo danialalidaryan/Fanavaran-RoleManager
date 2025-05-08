@@ -362,7 +362,15 @@ class NewRoleRequest(models.Model):
         "FINREJ": "خاتمه - رد",
         "FAILED": "خطا",
     }
-        
+    ROLE_TYPE_CODE_CHOICES = {
+        "A": "تحلیل گران",
+        "P": "برنامه نویسان",
+        "T": "تسترها",
+        "S": "پشتیبان",
+        "M": "مدیران",
+        "O": "سایرین",
+    }
+    
     RoleTitle = models.CharField(max_length=100, verbose_name='عنوان سمت')
     HasLevel = models.BooleanField(verbose_name='آیا این سمت دارای سطح است؟', default=False)
     HasSuperior = models.BooleanField(verbose_name='آیا این سمت دارای ارشد دارد؟', default=False)
@@ -392,6 +400,9 @@ class NewRoleRequest(models.Model):
     StatusCode = models.CharField(choices=STATUS_CHOICES, max_length=6, null=True, default="DRAFTR")
     DocId = models.IntegerField(verbose_name="شناسه سند", null=True, blank=True)
     RelevantManager = models.CharField(max_length=50, verbose_name="مدیر مربوطه", null=True)
+    RoleTypeCode = models.CharField(max_length=1, choices=ROLE_TYPE_CODE_CHOICES, verbose_name="نوع سمت", null=True)
+    NewRoleTypeTitle = models.CharField(max_length=100, verbose_name="عنوان نوع سمت جدید", null=True)
+    
     
 class Team(models.Model):
     class Meta:
