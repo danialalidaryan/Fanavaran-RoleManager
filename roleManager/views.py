@@ -25,8 +25,8 @@ def setTeamAllowedRoleRequest(request):
     TEAMNAMES = list(Team.objects.values("TeamName", "TeamCode"))
     ROLENAMES = list(Role.objects.values("RoleName", "RoleId"))
     CURRENTUSER_REQUEST = get_currentUser_request(
-        information["currentUser_nationalCode"])
-    CURRENTUSER_REQUEST["Status"] = False
+        information["currentUser_nationalCode"], targetedTable=SetTeamAllowedRoleRequest)
+    # CURRENTUSER_REQUEST["Status"] = False
 
     # محاسبه افرادی که مشغول به کار هستند در آن تیم و سمت
     for item in ALLOWEDTEAMROLE:
@@ -72,8 +72,8 @@ def setTeamAllowedRoleRequest(request):
 
 
 def newRoleRequest(request):
+    information = get_currentUser_CTO_manager_information(request)
     if request.method == "POST":
-        information = get_currentUser_CTO_manager_information(request)
         doc_state = "بررسی مدیر"
         if information["currentUser_role"] != "DEF":
             doc_state = "بررسی مدیر عامل"
@@ -94,7 +94,11 @@ def newRoleRequest(request):
                 ManagerId=information["currentUser_managers"][0],
                 CTOId=information["cto_nationalCode"],
                 StatusCode="MANREV" if information["currentUser_role"] == "DEF" else "CTOREV",
-                RelevantManager=body_data["RelevantManager"]
+                ManagerType=ConstValue.objects.get(
+                    id=int(body_data["ManagerType"])),
+                RoleType=ConstValue.objects.get(
+                    id=int(body_data["RoleType"])),
+                NewRoleTypeTitle=body_data["NewRoleTypeTitle"]
             )
             RESPONSE = register_send_document(
                 information=information,
@@ -107,11 +111,21 @@ def newRoleRequest(request):
             return JsonResponse({"error": True, "message": str(error)})
         except Exception as error:
             return JsonResponse({"error": True, "message": "بروز خطا در ایجاد درخواست سمت مجاز تیم"})
-
-    TEAMS = Team.objects.all()
+    else:
+        CURRENTUSER_REQUEST = get_currentUser_request(
+            information["currentUser_nationalCode"], targetedTable=NewRoleRequest)
+        TEAMS = Team.objects.all()
+        MANAGERS_TYPE = ConstValue.objects.filter(
+            id__range=(120, 122)).order_by("OrderNumber")
+        ROLE_TYPE = ConstValue.objects.filter(
+            id__range=(125, 134)).order_by("OrderNumber")
 
     return render(request, 'roleManager/newRoleRequest.html', context={
         "teams": TEAMS,
+        "managerType": MANAGERS_TYPE,
+        "currentUser_request": CURRENTUSER_REQUEST,
+        "managerType": MANAGERS_TYPE,
+        "roleType": ROLE_TYPE,
     })
 
 
@@ -143,7 +157,7 @@ def showSetTeamAllowedRoleRequest(request, requestID):
                         for team in REQUEST.TeamAllowedRoles:
                             for role in team["Roles"]:
                                 teamAllowedRoles_record = TeamAllowedRoles.objects.get(TeamCode=team["TeamCode"],
-                                                                                    RoleId=role["RoleId"])
+                                                                                       RoleId=role["RoleId"])
                                 teamAllowedRoles_record.AllowedRoleCount = role["RoleCount"]
                                 teamAllowedRoles_record.SetTeamAllowedRoleRequest = REQUEST
                                 teamAllowedRoles_record.save()
@@ -171,7 +185,7 @@ def showSetTeamAllowedRoleRequest(request, requestID):
                             DATA["message"] = "درخواست با موفقیت تایید شد"
                     except Exception:
                         raise ValueError("بروز خطا در قسمت ذخیره اطلاعات")
-                    
+
             elif bodyData["status"] == "REJECT":
                 if information["currentUser_role"] == "CTO":
                     REQUEST.StatusCode = "FINREJ"
@@ -247,7 +261,7 @@ def showSetTeamAllowedRoleRequest(request, requestID):
                     else:
                         DATA["error"] = True
                         DATA["message"] = "متاسفانه شما میتوانید فقط درخواست های خود را مشاهده کنید"
-    
+
     return render(request, 'roleManager/showSetTeamAllowedRoleRequest.html', context={
         "request": REQUEST,
         'permisionDataJson': json.dumps(DATA),
@@ -264,11 +278,12 @@ def showNewRoleRequest(request, requestID):
     }
 
     information = get_currentUser_CTO_manager_information(request)
+    information["currentUser_role"] = "CTO"
     REQUEST = NewRoleRequest.objects.get(id=requestID)
     request_data = ast.literal_eval(REQUEST.AllowedTeams)
-    teams = Team.objects.all()
+    TEAMS = Team.objects.all()
     for team in request_data:
-        team["TeamName"] = teams.filter(
+        team["TeamName"] = TEAMS.filter(
             TeamCode=team["TeamCode"]).first().TeamName
     REQUEST.AllowedTeams = request_data
     REQUEST.ConditionsText = ast.literal_eval(REQUEST.ConditionsText)
@@ -282,7 +297,7 @@ def showNewRoleRequest(request, requestID):
 
     if request.method == "POST":
         try:
-            bodyData = json.loads(request.body)
+            bodyData = json.loads(request.body)            
             if bodyData["status"] == "ACCEPT":
                 if information["currentUser_role"] == "CTO":
                     saveData_resoponse = saveData_in_newRoleRequest_record(
@@ -370,12 +385,19 @@ def showNewRoleRequest(request, requestID):
                     else:
                         DATA["error"] = True
                         DATA["message"] = "متاسفانه شما میتوانید فقط درخواست های خود را مشاهده کنید"
+            MANAGERS_TYPE = ConstValue.objects.filter(
+                id__range=(120, 122)).order_by("OrderNumber")
+            ROLE_TYPE = ConstValue.objects.filter(
+                id__range=(125, 134)).order_by("OrderNumber")
 
     return render(request, 'roleManager/showNewRoleRequest.html', context={
         "request": REQUEST,
         'permisionDataJson': json.dumps(DATA),
         'permisionData': DATA,
-        "deniedAccessStatus": DENIED_ACCESS_STATUS
+        "deniedAccessStatus": DENIED_ACCESS_STATUS,
+        "managerType": MANAGERS_TYPE,
+        "roleType": ROLE_TYPE,
+        "teams": TEAMS,
     })
 
 # ################### Functions ###################
@@ -542,7 +564,9 @@ def get_currentUser_CTO_manager_information(request) -> dict:
         return information
 
 
-def get_currentUser_request(currentUser_NationalCode: str) -> dict:
+# با فراخوانی این تابع ما میخوایم چک کنیم که آیا کاربر فعلی با کد ملی خودش درخواست جدیدی ثبت کرده است یا خیر
+# "نام جدول" اسم جدولی است که میخواهیم در آن به دنبال درخواست کاربر بگردیم
+def get_currentUser_request(currentUser_NationalCode: str, targetedTable) -> dict:
     RESPONSE = {
         "Status": True,
         "Error": False,
@@ -554,8 +578,9 @@ def get_currentUser_request(currentUser_NationalCode: str) -> dict:
         if not currentUser_NationalCode:
             raise ValueError("کد ملی کاربر نامعتبر است")
 
-        # گرفتن تمام درخواست‌های کاربر فعلی
-        user_requests = SetTeamAllowedRoleRequest.objects.filter(
+        # تمام درخواست های کاربر فعلی رو میریزیم اینجا
+        # بستگی داره که روی کدوم جدول بخوایم جستجو کنیم
+        user_requests = targetedTable.objects.filter(
             RequestorId=currentUser_NationalCode
         )
 
@@ -624,7 +649,9 @@ def saveNewRoleRequest(newRoleRequest) -> dict:
                 RoleName=newRoleRequest.RoleTitle,
                 HasLevel=newRoleRequest.HasLevel,
                 HasSuperior=newRoleRequest.HasSuperior,
-                NewRoleRequest=newRoleRequest
+                NewRoleRequest=newRoleRequest,
+                ManagerType = newRoleRequest.ManagerType.Caption,
+                RoleType = newRoleRequest.RoleType.Caption
             )
             newRoleObject.save(force_insert=True)
 
@@ -708,13 +735,14 @@ def saveData_in_newRoleRequest_record(newRoleRequest, bodyData, currentUserCtoMa
         newRoleRequest.DutiesText = bodyData["Duties"]
         newRoleRequest.RequestorId = currentUserCtoManager_information["currentUser_nationalCode"]
         newRoleRequest.ManagerId = currentUserCtoManager_information["currentUser_managers"][0]
+        newRoleRequest.ManagerType = ConstValue.objects.get(id=int(bodyData["ManagerType"]))
+        newRoleRequest.RoleType = ConstValue.objects.get(id=int(bodyData["RoleType"]))
+        newRoleRequest.NewRoleTypeTitle = bodyData["NewRoleTypeTitle"]
         newRoleRequest.ManagerOpinion = 1
         newRoleRequest.CTOId = currentUserCtoManager_information["cto_nationalCode"]
         newRoleRequest.StatusCode = "CTOREV"
-        newRoleRequest.RelevantManager = bodyData["RelevantManager"]
         newRoleRequest.save()
         RESPONSE["message"] = "درخواست با موفقیت ثبت و ارسال شد."
-
     except Exception:
         RESPONSE["message"] = "بروز خطا در تغییر رکورد سمت."
         RESPONSE["error"] = True

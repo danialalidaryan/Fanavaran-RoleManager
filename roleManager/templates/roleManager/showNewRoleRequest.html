@@ -12,33 +12,84 @@
     <div id="topSection">
       <!-- بخش عنوان سمت و مدیر مربوطه -->
       <div id="topSection_rightSide">
-        <div id="roleTitleInputContainer">
+        <div id="roleTitleInputContainer" class="flexRowContainer">
           <img class="headerIcon" src="{% static 'roleManager/images/Icons/NewRoleRequest/role_title_icon.png'%}" alt="Role Title Icon">
           <p class="headerTitle">عنوان سمت :</p>
           <input id="roleTitleInput" type="text" value="{{request.RoleTitle}}">
         </div>
 
-        <div id="selectManagerContainer">
-          <img class="headerIcon" src="{% static 'roleManager/images/Icons/NewRoleRequest/manager_icon.png'%}" alt="Manager Icon">
-          <p class="headerTitle">مدیر مربوطه :</p>
-          <select class="form-control select2" id="managerSelect">
-            <option></option>
-            <option>مدیر پروژه</option>
-            <option>مدیر تست</option>
-            <option>مدیر پشتیبانی</option>
-          </select>
+        <div id="roleTypeContainer" class="flexRowContainer">
+          <div id="roleType_title" class="flexRowContainer">
+            <img class="headerIcon" src="{% static 'roleManager/images/Icons/NewRoleRequest/role_type_icon.png' %}" alt="Role Type Icon">
+            <p class="headerTitle">نوع سمت :</p>
+          </div>
+
+          <div id="roleType_icons" class="flexRowContainer">
+            {% for type in roleType %}
+              <div>
+                <img class="circleIcon roleTypeIcons" isDisabled="false" data-objectid="{{type.id}}"
+                  {% if  type.Code == request.RoleType.Code %}
+                  isClicked="true"
+                  src="{% static 'roleManager/images/Icons/NewRoleRequest/'|add:type.Code|add:'_clicked_icon.png' %}"
+                  {% else %}
+                  src="{% static 'roleManager/images/Icons/NewRoleRequest/'|add:type.Code|add:'_default_icon.png' %}"
+                  isClicked="false"
+                  {% endif %}
+                  {% if type.Code == 'Role_Other' %}
+                  id="otherRoleTypeIcon"
+                  {% endif %}
+                  data-staticAddress="{% static 'roleManager/images/Icons/NewRoleRequest' %}" data-iconName="{{type.Code}}"
+                  alt="{{type.Code}} Icon">
+                <input type="radio" name="roleType" {% if type.Caption == request.RoleType.Caption %} checked {% endif %}>
+                <p>{{type.Caption}}</p>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div id="roleTypeInputContainer" class="flexRowContainer">
+          <img class="headerIcon" src="{% static 'roleManager/images/Icons/NewRoleRequest/role_type_icon.png' %}" alt="Role Title Icon">
+          <p class="headerTitle">نوع سمت جدید :</p>
+          <input id="roleTypeTitleInput" isVisible="false" type="text" placeholder="عنوان نوع سمت را وارد کنید" value="{{request.NewRoleTypeTitle}}">
         </div>
       </div>
   
       <!-- بخش اطلاعات تکمیلی -->
       <div id="topSection_leftSide">
-        <div>
+        <div id="selectManagerContainer" class="flexRowContainer">
+          <div id="selectManagerTitle" class="flexRowContainer">
+            <img class="headerIcon" src="{% static 'roleManager/images/Icons/NewRoleRequest/manager_icon.png'%}"
+              alt="Manager Icon">
+            <p class="headerTitle">مدیر مربوطه :</p>
+          </div>
+          <div id="relevantManager_icons" class="flexRowContainer">
+            {% for manager in managerType %}
+              <div> 
+                <img class="circleIcon relevantManagerIcon" isDisabled="false" data-objectid="{{manager.id}}"
+                  data-staticAddress="{% static 'roleManager/images/Icons/NewRoleRequest' %}" data-iconName="{{manager.Code}}"
+                  {% if manager.Caption == request.ManagerType.Caption %}
+                  src="{% static 'roleManager/images/Icons/NewRoleRequest/'|add:manager.Code|add:'_clicked_icon.png' %}"
+                  isClicked="true"
+                  {% else %}
+                  src="{% static 'roleManager/images/Icons/NewRoleRequest/'|add:manager.Code|add:'_default_icon.png' %}"
+                  isClicked="false"
+                  {% endif %}
+                  alt="{{manager.Code}} icon">
+                <p>{{manager.Caption}}</p>  
+                <input type="radio" name="relevantManager"  {% if manager.Caption == request.ManagerType.Caption %} checked {% endif %}>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div id="headerContainer" class="flexRowContainer">
           <img class="headerIcon" src="{% static 'roleManager/images/Icons/NewRoleRequest/information_icon.png'%}" alt="Information Icon">
           <p class="headerTitle">اطلاعات تکمیلی :</p>
         </div>
+
         <div id="radioButton_gridContainer">
           <!-- ردیف ۱: ارشد دارد -->
-          <div><p class="subHeaderTitle">ارشد دارد</p></div>
+          <div><p class="subHeaderTitle radioHeader">ارشد دارد</p></div>
           <div id="radioButtonContainer">
               <img
               id="hasSuperior_yes_image" 
