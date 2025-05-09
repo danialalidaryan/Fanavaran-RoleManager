@@ -40,7 +40,13 @@ input[type="text"] {
     width: 38px;
     cursor: pointer;
   }
-  
+  .circleIcon{
+  width: 50px;
+}
+.circleIcon:hover{
+  cursor: pointer;
+}
+
   /* ------------------------------------ قسمت بالایی (عنوان سمت و اطلاعات تکمیلی) ------------------------------------ */
   
   #topSection {
@@ -49,24 +55,33 @@ input[type="text"] {
     column-gap: 50px;
     row-gap: 30px;
   }
-  
-  #topSection_rightSide div,
-  #topSection_leftSide div:not(#radioButton_gridContainer) {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-  }
-  #topSection_rightSide #selectManagerContainer {
-    height: 40px;
-  }
-  #topSection_rightSide #roleTitleInputContainer {
-    margin-bottom: 30px;
-  }
-  
-  #topSection_leftSide {
-    width: 70%;
-    margin: 0 auto 0 0;
-  }
+#topSection_rightSide, #topSection_leftSide{
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+
+.flexRowContainer, #radioButton_gridContainer div{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+#roleType_icons, #relevantManager_icons{
+  justify-content: space-evenly;
+  flex: 1;
+  font-family: "IRAmir";
+  font-size: 10px;
+  color: gray;
+}
+#roleType_icons div, #relevantManager_icons div{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
   
   #radioButton_gridContainer {
     display: grid;
@@ -75,12 +90,15 @@ input[type="text"] {
   #radioButtonContainer {
     justify-content: center;
   }
-  #radioButtonContainer input {
+#radioButtonContainer input, #roleTypeInputContainer, #relevantManager_icons input, #roleType_icons input{
     display: none;
   }
   #radioButtonContainer p {
     margin-right: 3px;
   }
+.radioHeader{
+  font-size: 18px;
+}
   
   /* ------------------------------------ قسمت وسط بخش تیم ها و اضافه کردن آن ------------------------------------ */
   #middleSection {
@@ -228,7 +246,7 @@ input[type="text"] {
   }
   .bottomSection_textArea {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(100%, 1fr));
     gap: 15px;
     border: none;
     border-radius: 6px;
@@ -257,6 +275,8 @@ input[type="text"] {
     font-family: "Vazirmtn";
     font-size: 12px;
     font-weight: 700;
+    flex: 1;
+    text-align: center;
   }
   .textCard i{
     transition: all 0.3s ease-in-out;

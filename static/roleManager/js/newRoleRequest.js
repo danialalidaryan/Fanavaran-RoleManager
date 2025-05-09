@@ -361,7 +361,7 @@ $(document).ready(function () {
 
 // محدود کردن اینپوت های متن
 $(document).ready(function () {
-  $(".bottomSection_input, #roleTitleInput").on("keypress", function (e) {
+  $(".bottomSection_input, #roleTitleInput, #roleTypeTitleInput").on("keypress", function (e) {
     const char = String.fromCharCode(e.which);
 
     const validRegex = /^[آ-یa-zA-Z0-9۰-۹ ]$/;
@@ -409,20 +409,23 @@ $(document).ready(function () {
     } else {
       let formData = {
         RoleTitle: normalize_persian($("#roleTitleInput").val().trim()),
-        RoleTypeCode: $("input[name='roleType']:checked").siblings("img").data("code"),
+        RoleType: $("input[name='roleType']:checked").siblings("img").data("objectid"),
         NewRoleTypeTitle: null,
-        RelevantManager: $("input[name='relevantManager']:checked").siblings("p").text(),
+        ManagerType: $("input[name='relevantManager']:checked").siblings("img").data("objectid"),
         HasLevel: $("#hasLevel_yes_input").is(":checked"),
         HasSuperior: $("#hasSuperior_yes_input").is(":checked"),
         AllowedTeams: [],
         Conditions: [],
         Duties: [],
       };
-
-      if(formData.RoleType == "O"){
-        let text = $("#roleTypeTitleInput").text().trim()
+      
+      // به عنوان نوع سمت جدید وقتی که قابل رویت بود مقدار میدیم 
+      if($("#roleTypeTitleInput").attr("isVisible") == "true"){
+        let text = $("#roleTypeTitleInput").val().trim()
         text = normalize_persian(text)
         formData.NewRoleTypeTitle = text
+      }else{
+        formData.NewRoleTypeTitle = null
       }
 
       // مقدار دهی به allowedTeams به ازای هر input
@@ -468,7 +471,7 @@ $(document).ready(function () {
           let error = response.error;
           $.confirm({
             title: error ? "❌ خطا" : "✅ موفقیت",
-            content: response.message,
+            content: response.Message,
             type: error ? "red" : "green",
             theme: "modern",
             columnClass: "medium",

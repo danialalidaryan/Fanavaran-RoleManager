@@ -82,10 +82,6 @@ input[type="text"]:focus {
   justify-content: center;
 }
 
-#roleTypeInputContainer{
-  display: none;
-}
-
 
 #radioButton_gridContainer {
   display: grid;
@@ -94,7 +90,7 @@ input[type="text"]:focus {
 #radioButtonContainer {
   justify-content: center;
 }
-#radioButtonContainer input{
+#radioButtonContainer input , #roleTypeInputContainer, #relevantManager_icons input, #roleType_icons input{
   display: none;
 }
 #radioButtonContainer p {
@@ -251,7 +247,7 @@ input[type="text"]:focus {
 }
 .bottomSection_textArea {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(100%, 1fr));
   gap: 15px;
   border: none;
   border-radius: 6px;
@@ -280,6 +276,8 @@ input[type="text"]:focus {
   font-family: "Vazirmtn";
   font-size: 12px;
   font-weight: 700;
+  flex: 1;
+  text-align: center;
 }
 .textCard i{
   transition: all 0.3s ease-in-out;

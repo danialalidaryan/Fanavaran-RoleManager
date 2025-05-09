@@ -94,8 +94,10 @@ def newRoleRequest(request):
                 ManagerId=information["currentUser_managers"][0],
                 CTOId=information["cto_nationalCode"],
                 StatusCode="MANREV" if information["currentUser_role"] == "DEF" else "CTOREV",
-                RelevantManager=body_data["RelevantManager"],
-                RoleTypeCode=body_data["RoleTypeCode"],
+                ManagerType=ConstValue.objects.get(
+                    id=int(body_data["ManagerType"])),
+                RoleType=ConstValue.objects.get(
+                    id=int(body_data["RoleType"])),
                 NewRoleTypeTitle=body_data["NewRoleTypeTitle"]
             )
             RESPONSE = register_send_document(
@@ -113,10 +115,17 @@ def newRoleRequest(request):
         CURRENTUSER_REQUEST = get_currentUser_request(
             information["currentUser_nationalCode"], targetedTable=NewRoleRequest)
         TEAMS = Team.objects.all()
+        MANAGERS_TYPE = ConstValue.objects.filter(
+            id__range=(120, 122)).order_by("OrderNumber")
+        ROLE_TYPE = ConstValue.objects.filter(
+            id__range=(125, 134)).order_by("OrderNumber")
 
     return render(request, 'roleManager/newRoleRequest.html', context={
         "teams": TEAMS,
+        "managerType": MANAGERS_TYPE,
         "currentUser_request": CURRENTUSER_REQUEST,
+        "managerType": MANAGERS_TYPE,
+        "roleType": ROLE_TYPE,
     })
 
 
@@ -269,11 +278,12 @@ def showNewRoleRequest(request, requestID):
     }
 
     information = get_currentUser_CTO_manager_information(request)
+    information["currentUser_role"] = "CTO"
     REQUEST = NewRoleRequest.objects.get(id=requestID)
     request_data = ast.literal_eval(REQUEST.AllowedTeams)
-    teams = Team.objects.all()
+    TEAMS = Team.objects.all()
     for team in request_data:
-        team["TeamName"] = teams.filter(
+        team["TeamName"] = TEAMS.filter(
             TeamCode=team["TeamCode"]).first().TeamName
     REQUEST.AllowedTeams = request_data
     REQUEST.ConditionsText = ast.literal_eval(REQUEST.ConditionsText)
@@ -287,7 +297,7 @@ def showNewRoleRequest(request, requestID):
 
     if request.method == "POST":
         try:
-            bodyData = json.loads(request.body)
+            bodyData = json.loads(request.body)            
             if bodyData["status"] == "ACCEPT":
                 if information["currentUser_role"] == "CTO":
                     saveData_resoponse = saveData_in_newRoleRequest_record(
@@ -375,12 +385,19 @@ def showNewRoleRequest(request, requestID):
                     else:
                         DATA["error"] = True
                         DATA["message"] = "متاسفانه شما میتوانید فقط درخواست های خود را مشاهده کنید"
+            MANAGERS_TYPE = ConstValue.objects.filter(
+                id__range=(120, 122)).order_by("OrderNumber")
+            ROLE_TYPE = ConstValue.objects.filter(
+                id__range=(125, 134)).order_by("OrderNumber")
 
     return render(request, 'roleManager/showNewRoleRequest.html', context={
         "request": REQUEST,
         'permisionDataJson': json.dumps(DATA),
         'permisionData': DATA,
-        "deniedAccessStatus": DENIED_ACCESS_STATUS
+        "deniedAccessStatus": DENIED_ACCESS_STATUS,
+        "managerType": MANAGERS_TYPE,
+        "roleType": ROLE_TYPE,
+        "teams": TEAMS,
     })
 
 # ################### Functions ###################
@@ -632,7 +649,9 @@ def saveNewRoleRequest(newRoleRequest) -> dict:
                 RoleName=newRoleRequest.RoleTitle,
                 HasLevel=newRoleRequest.HasLevel,
                 HasSuperior=newRoleRequest.HasSuperior,
-                NewRoleRequest=newRoleRequest
+                NewRoleRequest=newRoleRequest,
+                ManagerType = newRoleRequest.ManagerType.Caption,
+                RoleType = newRoleRequest.RoleType.Caption
             )
             newRoleObject.save(force_insert=True)
 
@@ -716,13 +735,14 @@ def saveData_in_newRoleRequest_record(newRoleRequest, bodyData, currentUserCtoMa
         newRoleRequest.DutiesText = bodyData["Duties"]
         newRoleRequest.RequestorId = currentUserCtoManager_information["currentUser_nationalCode"]
         newRoleRequest.ManagerId = currentUserCtoManager_information["currentUser_managers"][0]
+        newRoleRequest.ManagerType = ConstValue.objects.get(id=int(bodyData["ManagerType"]))
+        newRoleRequest.RoleType = ConstValue.objects.get(id=int(bodyData["RoleType"]))
+        newRoleRequest.NewRoleTypeTitle = bodyData["NewRoleTypeTitle"]
         newRoleRequest.ManagerOpinion = 1
         newRoleRequest.CTOId = currentUserCtoManager_information["cto_nationalCode"]
         newRoleRequest.StatusCode = "CTOREV"
-        newRoleRequest.RelevantManager = bodyData["RelevantManager"]
         newRoleRequest.save()
         RESPONSE["message"] = "درخواست با موفقیت ثبت و ارسال شد."
-
     except Exception:
         RESPONSE["message"] = "بروز خطا در تغییر رکورد سمت."
         RESPONSE["error"] = True

@@ -41,36 +41,20 @@
           </div>
 
           <div id="roleType_icons" class="flexRowContainer">
-            <div>
-              <img class="circleIcon roleTypeIcons" isClicked="false" data-code="A" data-staticAddress="{% static 'roleManager/images/Icons/NewRoleRequest' %}" data-iconName="auditor" src="{% static 'roleManager/images/Icons/NewRoleRequest/auditor_default_icon.png' %}" alt="Auditor Icon">
-              <input type="radio" name="roleType" id="">              
-              <p>تحلیل گران</p>
-            </div>
-            <div>
-              <img class="circleIcon roleTypeIcons" isClicked="false" data-code="P" data-staticAddress="{% static 'roleManager/images/Icons/NewRoleRequest' %}" data-iconName="programmer" src="{% static 'roleManager/images/Icons/NewRoleRequest/programmer_default_icon.png' %}" alt="Programmer Icon">
-              <input type="radio" name="roleType" id="">              
-              <p>برنامه نویسان</p>
-            </div>
-            <div>
-              <img class="circleIcon roleTypeIcons" isClicked="false" data-code="T" data-staticAddress="{% static 'roleManager/images/Icons/NewRoleRequest' %}" data-iconName="tester" src="{% static 'roleManager/images/Icons/NewRoleRequest/tester_default_icon.png' %}" alt="Tester Icon">
-              <input type="radio" name="roleType" id="">              
-              <p>تستر ها</p>
-            </div>
-            <div>
-              <img class="circleIcon roleTypeIcons" isClicked="false" data-code="S" data-staticAddress="{% static 'roleManager/images/Icons/NewRoleRequest' %}" data-iconName="support" src="{% static 'roleManager/images/Icons/NewRoleRequest/support_default_icon.png' %}" alt="Support Icon">
-              <input type="radio" name="roleType" id="">              
-              <p>پشتیبان</p>
-            </div>
-            <div>
-              <img class="circleIcon roleTypeIcons" isClicked="false" data-code="M" data-staticAddress="{% static 'roleManager/images/Icons/NewRoleRequest' %}" data-iconName="manager" src="{% static 'roleManager/images/Icons/NewRoleRequest/manager_default_icon.png' %}" alt="Manager Icon">
-              <input type="radio" name="roleType" id="">              
-              <p>مدیران</p>
-            </div>
-            <div>
-              <img class="circleIcon roleTypeIcons" isClicked="false" data-code="O" id="otherRoleTypeIcon" data-staticAddress="{% static 'roleManager/images/Icons/NewRoleRequest' %}" data-iconName="other" src="{% static 'roleManager/images/Icons/NewRoleRequest/other_default_icon.png' %}" alt="Other Icon">
-              <input type="radio" name="roleType" id="">              
-              <p>سایرین</p>
-            </div>
+            {% for type in roleType %}
+              <div>
+                <img class="circleIcon roleTypeIcons" isClicked="false" data-objectid="{{type.id}}"
+                  {% if type.Code == 'Role_Other' %}
+                  id="otherRoleTypeIcon"
+                  {% endif %}
+                  data-staticAddress="{% static 'roleManager/images/Icons/NewRoleRequest' %}" data-iconName="{{type.Code}}"
+                  src="{% static 'roleManager/images/Icons/NewRoleRequest/'|add:type.Code|add:'_default_icon.png' %}"
+                  alt="{{type.Code}} Icon">
+                <input type="radio" name="roleType">
+                <p>{{type.Caption}}</p>
+              </div>
+            {% endfor %}
+
           </div>
         </div>
 
@@ -82,6 +66,7 @@
 
 
       </div>
+      
       <!-- بخش اطلاعات تکمیلی -->
       <div id="topSection_leftSide">
         <div id="selectManagerContainer" class="flexRowContainer">
@@ -90,21 +75,17 @@
             <p class="headerTitle">مدیر مربوطه :</p>
           </div>
           <div id="relevantManager_icons" class="flexRowContainer">
-            <div>
-              <img class="circleIcon relevantManagerIcon" isClicked="false" data-staticAddress="{% static 'roleManager/images/Icons/NewRoleRequest' %}" data-iconName="testing" src="{% static 'roleManager/images/Icons/NewRoleRequest/testing_default_icon.png' %}" alt="Tester Manager Icon">
-              <p>مدیر تست</p>
-              <input type="radio" name="relevantManager" id="">              
-            </div>
-            <div>
-              <img class="circleIcon relevantManagerIcon" isClicked="false" data-staticAddress="{% static 'roleManager/images/Icons/NewRoleRequest' %}" data-iconName="operator" src="{% static 'roleManager/images/Icons/NewRoleRequest/operator_default_icon.png' %}" alt="Operator Manager Icon">
-              <p>مدیر پشتیبانی</p>
-              <input type="radio" name="relevantManager" id="">              
-            </div>
-            <div>
-              <img class="circleIcon relevantManagerIcon" isClicked="false" data-staticAddress="{% static 'roleManager/images/Icons/NewRoleRequest' %}" data-iconName="management" src="{% static 'roleManager/images/Icons/NewRoleRequest/management_default_icon.png' %}" alt="Public Manager Icon">
-              <p>مدیر عمومی تیم</p>
-              <input type="radio" name="relevantManager" id="">              
-            </div>
+            {% for manager in managerType %}
+              <div>
+                <img class="circleIcon relevantManagerIcon" isClicked="false" 
+                  data-objectid="{{manager.id}}"
+                  data-staticAddress="{% static 'roleManager/images/Icons/NewRoleRequest' %}" data-iconName="{{manager.Code}}"
+                  src="{% static 'roleManager/images/Icons/NewRoleRequest/'|add:manager.Code|add:'_default_icon.png' %}"
+                  alt="{{manager.Code}}|add:' icon'">
+                <p>{{manager.Caption}}</p>
+                <input type="radio" name="relevantManager">
+              </div>
+            {% endfor %}
           </div>
         </div>
 

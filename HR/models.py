@@ -362,14 +362,7 @@ class NewRoleRequest(models.Model):
         "FINREJ": "خاتمه - رد",
         "FAILED": "خطا",
     }
-    ROLE_TYPE_CODE_CHOICES = {
-        "A": "تحلیل گران",
-        "P": "برنامه نویسان",
-        "T": "تسترها",
-        "S": "پشتیبان",
-        "M": "مدیران",
-        "O": "سایرین",
-    }
+
     
     RoleTitle = models.CharField(max_length=100, verbose_name='عنوان سمت')
     HasLevel = models.BooleanField(verbose_name='آیا این سمت دارای سطح است؟', default=False)
@@ -399,8 +392,8 @@ class NewRoleRequest(models.Model):
     CTODate = models.DateField(verbose_name='تاریخ اظهار نظر مدیرعامل', null=True)
     StatusCode = models.CharField(choices=STATUS_CHOICES, max_length=6, null=True, default="DRAFTR")
     DocId = models.IntegerField(verbose_name="شناسه سند", null=True, blank=True)
-    RelevantManager = models.CharField(max_length=50, verbose_name="مدیر مربوطه", null=True)
-    RoleTypeCode = models.CharField(max_length=1, choices=ROLE_TYPE_CODE_CHOICES, verbose_name="نوع سمت", null=True)
+    ManagerType = models.ForeignKey(to="ConstValue",on_delete=models.SET_NULL, verbose_name="مدیر مربوطه", null=True, related_name='as_manager_type')
+    RoleType = models.ForeignKey(to="ConstValue",on_delete=models.SET_NULL, verbose_name="کد نوع سمت", null=True, related_name='as_role_type')
     NewRoleTypeTitle = models.CharField(max_length=100, verbose_name="عنوان نوع سمت جدید", null=True)
     
     
@@ -447,7 +440,10 @@ class Role(models.Model):
     Comment = models.CharField(max_length=200, verbose_name='توضیحات', null=True)
     NewRoleRequest = models.ForeignKey(to="NewRoleRequest", verbose_name='شناسه درخواست اضافه کردن سمت', null=True,
                                        on_delete=models.SET_NULL)
+    ManagerType = models.CharField(max_length=100, verbose_name="مدیر مربوطه", null=True)
+    RoleType = models.CharField(max_length=100, verbose_name="کد نوع سمت", null=True)
 
+    
     def __str__(self):
         return self.RoleName
 
